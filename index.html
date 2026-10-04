@@ -1,0 +1,1086 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>VSEPR Lab</title>
+<style>
+:root{--bg:#f7f8fb;--card:#fff;--text:#1f2937;--muted:#667085;--border:#dfe3ea;--accent:#3559d6;--accent2:#eef2ff;--good:#177245;--bad:#b42318}
+*{box-sizing:border-box} body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--text)}
+header{background:#fff;border-bottom:1px solid var(--border);padding:18px 20px;position:sticky;top:0;z-index:5}
+.wrap{max-width:1100px;margin:auto} h1{font-size:1.5rem;margin:0} .sub{color:var(--muted);margin-top:4px;font-size:.95rem}
+nav{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px} nav button,.btn{border:1px solid var(--border);background:#fff;padding:10px 14px;border-radius:10px;cursor:pointer;font-size:1rem}
+nav button.active,.btn.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+main{padding:22px 16px 40px} .grid{display:grid;gap:16px} .two{grid-template-columns:repeat(2,minmax(0,1fr))} .four{grid-template-columns:repeat(4,minmax(0,1fr))}
+.card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px} label{display:block;font-weight:650;margin-bottom:7px}
+input,select{width:100%;padding:12px;border:1px solid var(--border);border-radius:10px;font-size:1rem;background:#fff}
+.row{display:flex;gap:10px;align-items:end} .grow{flex:1} .value{font-size:1.35rem;font-weight:750;margin-top:6px}
+.kicker{font-size:.78rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;font-weight:700}
+.small{font-size:.92rem;color:var(--muted);line-height:1.45} .pill{display:inline-block;border:1px solid var(--border);border-radius:999px;padding:6px 10px;margin:4px 4px 0 0;background:#fff}
+.hidden{display:none!important} .result{margin-top:14px} .status{font-weight:700;margin-top:10px} .ok{color:var(--good)} .no{color:var(--bad)}
+table{width:100%;border-collapse:collapse;font-size:.93rem} th,td{padding:10px;border-bottom:1px solid var(--border);text-align:left;vertical-align:top} th{background:#fafbfc;position:sticky;top:0}
+.scroll{overflow:auto;max-height:560px;border:1px solid var(--border);border-radius:12px}
+footer{text-align:center;color:var(--muted);padding:20px;font-size:.85rem}
+
+.hybGrid{display:grid;grid-template-columns:minmax(0,1.08fr) minmax(0,.92fr);gap:16px}
+.hybHero{display:grid;grid-template-columns:150px 1fr;gap:16px;align-items:center}
+.hybBadge{display:flex;align-items:center;justify-content:center;min-height:112px;border-radius:18px;background:var(--accent2);border:1px solid #cfd7ff;font-size:2.2rem;font-weight:850;color:#263e9a}
+.hybMeta{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:12px}
+.hybMeta>div{padding:10px;border:1px solid var(--border);border-radius:12px;background:#fafbfc}
+.orbitalPanel{border:1px solid var(--border);border-radius:14px;padding:14px;background:#fbfcff}
+.phaseSteps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin:13px 0 8px}
+.phaseStep{border:1px solid var(--border);background:#fff;border-radius:10px;padding:9px 6px;font-size:.78rem;line-height:1.25;color:var(--muted);cursor:pointer}
+.phaseStep.active{border-color:#8196e6;background:#eef2ff;color:#263e9a;font-weight:800}
+.phaseCaption{min-height:42px;padding:9px 11px;border-radius:10px;background:#fff;border:1px solid var(--border);font-size:.88rem;line-height:1.38;color:var(--text)}
+.orbitalStage{display:flex;flex-direction:column;justify-content:center;min-height:196px;padding:14px 8px 25px;overflow-x:auto}
+.orbitalDiagram{display:flex;align-items:flex-end;justify-content:center;gap:16px;min-width:max-content}
+.subshellBlock{display:flex;flex-direction:column;align-items:center;gap:6px}
+.subshellName{font-size:.78rem;color:var(--muted);font-weight:750}
+.orbitalGroup{display:flex;gap:5px;align-items:flex-end}
+.orbBox{position:relative;width:43px;height:56px;border:2px solid #596274;border-radius:3px;background:linear-gradient(#fff,#fbfcff);flex:0 0 auto}
+.orbBox.promoted{border-color:#b97916;background:#fffaf0}
+.orbBox .orbLabel{position:absolute;left:50%;transform:translateX(-50%);bottom:-22px;font-size:.69rem;color:var(--muted);white-space:nowrap}
+.electron{position:absolute;font-size:1.48rem;line-height:1;color:#263e9a;font-weight:900;top:7px}
+.electron.up{left:6px}.electron.down{right:6px}
+.promoted .electron{color:#b56a06}
+.mixArrow{font-size:1.7rem;color:var(--muted);align-self:center;padding:0 3px 16px}
+.hybridBox{border-color:#506fd0;background:#f5f7ff}
+.pResidual{border-color:#7e6bb8;background:#faf7ff}
+.hybControls{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.hybControls .btn{padding:8px 11px;font-size:.9rem}
+.animationStatus{font-size:.8rem;color:var(--muted);margin-left:auto;align-self:center}
+#hybCanvas{display:block;width:100%;height:410px;touch-action:none;cursor:grab}
+#hybCanvas:active{cursor:grabbing}
+.hybCanvasWrap{position:relative;border:1px solid var(--border);border-radius:14px;overflow:hidden;background:radial-gradient(circle at 50% 46%,#fff 0,#f8f9fd 48%,#edf1f7 100%)}
+.hybCanvasBadge{position:absolute;left:10px;top:10px;z-index:2;background:rgba(255,255,255,.88);border:1px solid var(--border);border-radius:999px;padding:5px 9px;font-size:.75rem;color:var(--muted);pointer-events:none}
+.hybViewControls{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px}
+.hybViewControls .btn{padding:7px 9px;font-size:.82rem}
+.hybViewControls label{display:flex;align-items:center;gap:6px;margin:0 0 0 auto;font-weight:500;font-size:.82rem;color:var(--muted)}
+.hybViewControls input{width:auto}
+.orbitalLegend{display:flex;gap:12px;flex-wrap:wrap;margin-top:9px}
+.orbitalLegend span{font-size:.82rem;color:var(--muted)}
+.lobeKey{display:inline-block;width:18px;height:10px;border-radius:50%;vertical-align:-1px;margin-right:5px}
+.hybWarning{margin-top:12px;padding:11px 12px;border-left:4px solid #d7a22a;background:#fff9e8;border-radius:8px;color:#6f5514;font-size:.88rem;line-height:1.45}
+@keyframes stagePulse{0%{opacity:.45;transform:translateY(2px)}100%{opacity:1;transform:none}}
+.stageEnter{animation:stagePulse .32s ease-out}
+@media(max-width:800px){.hybGrid{grid-template-columns:1fr}.hybHero{grid-template-columns:1fr}.hybBadge{min-height:80px}.hybMeta{grid-template-columns:1fr}.phaseSteps{grid-template-columns:1fr}#hybCanvas{height:350px}}
+
+.resonanceCard{grid-column:1/-1}
+.resGrid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:16px;margin-top:14px}
+.resPanel{border:1px solid var(--border);border-radius:14px;padding:14px;background:#fbfcff;min-width:0}
+.resStats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin-top:12px}
+.resStats>div{padding:10px;border:1px solid var(--border);border-radius:11px;background:#fff}
+.resForms{display:flex;gap:10px;overflow-x:auto;padding:8px 2px 12px;scroll-snap-type:x proximity}
+.resForm{flex:0 0 210px;border:1px solid var(--border);border-radius:12px;background:#fff;padding:9px;scroll-snap-align:start;transition:border-color .2s,background .2s,transform .2s}
+.resForm.active{border-color:#7188dd;background:#f3f5ff;transform:translateY(-2px)}
+.resFormTitle{text-align:center;font-size:.78rem;font-weight:750;color:var(--muted);margin-bottom:5px}
+.resForm svg{width:100%;height:145px;display:block}
+.resArrow{display:flex;align-items:center;justify-content:center;color:#667085;font-size:1.45rem;flex:0 0 24px}
+.resControls{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.resControls .btn{padding:8px 11px;font-size:.88rem}
+.resHybridWrap{position:relative;border:1px solid var(--border);border-radius:14px;overflow:hidden;background:radial-gradient(circle at 50% 45%,#fff 0,#f7f9fd 55%,#edf1f7 100%)}
+#resCanvas{display:block;width:100%;height:385px;touch-action:none;cursor:grab}
+#resCanvas:active{cursor:grabbing}
+.resCanvasBadge{position:absolute;left:10px;top:10px;padding:5px 9px;border:1px solid var(--border);border-radius:999px;background:rgba(255,255,255,.9);font-size:.74rem;color:var(--muted);pointer-events:none;z-index:2}
+.resHybridControls{display:flex;gap:7px;flex-wrap:wrap;margin-top:9px;align-items:center}
+.resHybridControls .btn{padding:7px 9px;font-size:.8rem}
+.resHybridControls label{display:flex;align-items:center;gap:5px;margin:0;font-weight:500;font-size:.8rem;color:var(--muted)}
+.resHybridControls input{width:auto}
+.resLegend{display:flex;gap:12px;flex-wrap:wrap;margin-top:9px;font-size:.8rem;color:var(--muted)}
+.resLineKey{display:inline-block;width:25px;height:0;border-top:4px solid #5f6f95;vertical-align:3px;margin-right:5px;border-radius:4px}
+.resCloudKey{display:inline-block;width:25px;height:12px;border-radius:999px;vertical-align:-2px;margin-right:5px;border:1px solid rgba(0,0,0,.08)}
+.resCloudKey.top{background:linear-gradient(90deg,rgba(74,105,210,.25),rgba(74,105,210,.82),rgba(74,105,210,.25))}
+.resCloudKey.bottom{background:linear-gradient(90deg,rgba(213,112,150,.25),rgba(213,112,150,.82),rgba(213,112,150,.25))}
+.resPKey{display:inline-block;width:20px;height:14px;vertical-align:-3px;margin-right:5px;position:relative}
+.resPKey:before,.resPKey:after{content:"";position:absolute;top:2px;width:9px;height:10px;border-radius:50%;background:#8b78bd}
+.resPKey:before{left:0}.resPKey:after{right:0}
+.resCharge{display:inline-flex;align-items:center;justify-content:center;min-width:21px;height:21px;border-radius:999px;background:#fff1d6;border:1px solid #e4bd6b;color:#79550c;font-size:.72rem;font-weight:800;margin-right:4px}
+.resPiExplain{margin-top:9px;padding:9px 10px;border-radius:10px;background:#f8f7fc;border:1px solid #e4e0f0;font-size:.81rem;line-height:1.4;color:#5e5578}
+.resNote{margin-top:12px;padding:10px 12px;border-left:4px solid #6f86d8;background:#f3f6ff;border-radius:8px;font-size:.87rem;line-height:1.45;color:#34446e}
+@media(max-width:800px){.resGrid{grid-template-columns:1fr}.resStats{grid-template-columns:1fr}.resForm{flex-basis:190px}#resCanvas{height:330px}}
+
+.viewer3d{display:grid;grid-template-columns:minmax(0,1fr) 265px;gap:18px;align-items:center}
+.canvasWrap{position:relative;min-height:470px;border:1px solid var(--border);border-radius:18px;background:
+radial-gradient(circle at 50% 40%,#fff 0,#f9faff 34%,#eef1f8 72%,#e8ecf4 100%);overflow:hidden}
+#mol3d{display:block;width:100%;height:470px;touch-action:none;cursor:grab}
+#mol3d:active{cursor:grabbing}
+.viewerControls{display:flex;flex-direction:column;gap:11px}
+.viewerControls .btn{width:100%}
+.viewerControls input[type=range]{width:100%}
+.legendDot{display:inline-block;width:12px;height:12px;border-radius:50%;vertical-align:-1px;margin-right:6px;border:1px solid rgba(0,0,0,.18)}
+.controlLine{display:grid;grid-template-columns:70px 1fr 44px;gap:8px;align-items:center}
+.canvasBadge{position:absolute;left:12px;top:12px;background:rgba(255,255,255,.88);backdrop-filter:blur(6px);border:1px solid var(--border);border-radius:999px;padding:6px 10px;font-size:.78rem;color:var(--muted);pointer-events:none;z-index:2}
+.viewButtons{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.viewButtons button{padding:8px 6px;font-size:.82rem}
+.switchLine{display:flex;align-items:center;gap:8px;font-size:.92rem;color:var(--text)}
+.switchLine input{width:auto}
+.viewerHint{padding:10px 11px;border:1px solid var(--border);border-radius:11px;background:#fafbfe}
+@media(max-width:760px){.viewer3d{grid-template-columns:1fr}.canvasWrap{min-height:360px}#mol3d{height:360px}}
+
+@media(max-width:760px){.two,.four{grid-template-columns:1fr} .row{flex-direction:column;align-items:stretch} header{position:static}}
+</style>
+</head>
+<body>
+<header><div class="wrap"><h1>VSEPR Lab</h1><div class="sub">VSEPR, geometria 3D e ibridazione degli orbitali • esercizi interattivi per il liceo scientifico</div>
+<nav>
+<button data-tab="explore" class="active">Esplora</button>
+<button data-tab="practice">Allenati</button>
+<button data-tab="archive">Archivio</button>
+</nav></div></header>
+
+<main class="wrap">
+<section id="explore">
+<div class="card">
+<div class="row">
+<div class="grow"><label for="formula">Molecola o ione</label><input id="formula" list="formulas" placeholder="es. NH3, H2O, XeF4"><datalist id="formulas"></datalist></div>
+<button class="btn primary" id="analyze">Analizza</button>
+</div>
+<div id="exploreMsg" class="small" style="margin-top:10px">Puoi scrivere formule con o senza pedici: ad esempio NH3 oppure NH₃.</div>
+</div>
+<div id="answer" class="grid two result hidden">
+<div class="card"><div class="kicker">Specie</div><div class="value" id="aFormula"></div><div class="small" id="aCentral"></div></div>
+<div class="card"><div class="kicker">Formula VSEPR</div><div class="value" id="aAxe"></div><div class="small"><span id="aDomains"></span> domini elettronici • <span id="aLone"></span> coppie solitarie</div></div>
+<div class="card"><div class="kicker">Geometria elettronica</div><div class="value" id="aElectron"></div><div class="small">Tiene conto di legami e coppie solitarie.</div></div>
+<div class="card"><div class="kicker">Geometria molecolare</div><div class="value" id="aMolecular"></div><div class="small">Descrive la disposizione degli atomi nello spazio.</div></div>
+<div class="card"><div class="kicker">Angoli di legame</div><div class="value" id="aAngles"></div></div>
+<div class="card"><div class="kicker">Polarità</div><div class="value" id="aPolarity"></div></div>
+<div class="card" style="grid-column:1/-1"><div class="kicker">Osservazione</div><div class="small" id="aNote" style="margin-top:8px;font-size:1rem;color:var(--text)"></div></div>
+<div class="card" style="grid-column:1/-1">
+  <div class="kicker">Modello 3D VSEPR</div>
+  <div class="viewer3d" style="margin-top:10px">
+    <div class="canvasWrap">
+      <div class="canvasBadge">Trascina per ruotare • rotella per zoomare</div>
+      <canvas id="mol3d" width="760" height="430" aria-label="Modello tridimensionale della molecola"></canvas>
+    </div>
+    <div class="viewerControls">
+      <div class="small viewerHint"><strong>Modello VSEPR 3D.</strong> Trascina per ruotare e usa la rotella per lo zoom. Il modello è schematico e serve a leggere chiaramente la geometria.</div>
+      <div class="viewButtons">
+        <button class="btn" id="viewIso" type="button">Isometrica</button>
+        <button class="btn" id="viewFront" type="button">Frontale</button>
+        <button class="btn" id="viewTop" type="button">Dall’alto</button>
+      </div>
+      <label class="switchLine"><input id="showLonePairs" type="checkbox" checked> Coppie solitarie</label>
+      <label class="switchLine"><input id="showScaffold" type="checkbox" checked> Struttura geometrica</label>
+      <label class="switchLine"><input id="showLabels" type="checkbox" checked> Simboli degli atomi</label>
+      <label class="switchLine"><input id="autoRotate" type="checkbox"> Rotazione automatica</label>
+      <div class="controlLine small"><span>Zoom</span><input id="zoom3d" type="range" min="70" max="155" value="100"><span id="zoomLabel">100%</span></div>
+      <div class="controlLine small"><span>Atomi</span><input id="atomScale3d" type="range" min="80" max="130" value="100"><span id="atomScaleLabel">100%</span></div>
+      <button class="btn" id="reset3d" type="button">Reimposta modello</button>
+      <div class="small">
+        <div><span class="legendDot" style="background:#374151"></span>atomo centrale</div>
+        <div style="margin-top:6px"><span class="legendDot" style="background:#7c91e8"></span>atomi legati</div>
+        <div style="margin-top:6px"><span class="legendDot" style="background:#d49a3a"></span>domini non leganti</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card" style="grid-column:1/-1">
+  <div class="kicker">Ibridazione dell’atomo centrale</div>
+  <div class="hybHero" style="margin-top:10px">
+    <div class="hybBadge" id="hybBadge">sp³</div>
+    <div>
+      <div class="value" id="hybTitle">Ibridazione sp³</div>
+      <div class="small" id="hybSummary">Quattro domini elettronici → quattro orbitali ibridi equivalenti.</div>
+      <div class="hybMeta">
+        <div><div class="kicker">Orbitali combinati</div><div id="hybMix" style="margin-top:5px;font-weight:700"></div></div>
+        <div><div class="kicker">Orbitali ibridi</div><div id="hybCount" style="margin-top:5px;font-weight:700"></div></div>
+        <div><div class="kicker">p non ibridati</div><div id="hybPleft" style="margin-top:5px;font-weight:700"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="hybGrid" style="margin-top:16px">
+    <div class="orbitalPanel">
+      <div class="kicker">Animazione dell’ibridazione — schema a caselle</div>
+      <div class="small" style="margin-top:5px">Segui il passaggio dagli orbitali atomici non ibridati allo stato promosso, quando necessario, e infine agli orbitali ibridi.</div>
+      <div class="phaseSteps">
+        <button class="phaseStep" id="phaseGround" type="button">1 · Non ibridati<br><span>stato iniziale</span></button>
+        <button class="phaseStep" id="phaseExcited" type="button">2 · Promossi<br><span>elettroni eccitati</span></button>
+        <button class="phaseStep active" id="phaseHybrid" type="button">3 · Ibridati<br><span>assetto finale</span></button>
+      </div>
+      <div id="phaseCaption" class="phaseCaption"></div>
+      <div id="orbitalStage" class="orbitalStage" aria-live="polite"></div>
+      <div class="hybControls">
+        <button class="btn primary" id="animateHybrid" type="button">▶ Riproduci le 3 fasi</button>
+        <button class="btn" id="resetHybrid" type="button">Mostra fase finale</button>
+        <span id="animationStatus" class="animationStatus"></span>
+      </div>
+      <div id="piInfo" class="small" style="margin-top:12px;color:var(--text)"></div>
+    </div>
+
+    <div class="orbitalPanel">
+      <div class="kicker">Forma degli orbitali ibridi</div>
+      <div class="small" style="margin-top:5px">Ogni orbitale ibrido ha un grande lobo direzionale e un piccolo lobo di fase opposta. Gli orbitali p non ibridati, quando presenti, sono mostrati come dumbbell.</div>
+      <div class="hybCanvasWrap">
+        <div class="hybCanvasBadge">Trascina per ruotare • rotella per zoomare</div>
+        <canvas id="hybCanvas" width="520" height="410" aria-label="Forma e orientamento tridimensionale degli orbitali ibridi"></canvas>
+      </div>
+      <div class="hybViewControls">
+        <button class="btn" id="hybIso" type="button">Isometrica</button>
+        <button class="btn" id="hybFront" type="button">Frontale</button>
+        <button class="btn" id="hybTop" type="button">Dall’alto</button>
+        <button class="btn" id="hybSync" type="button">Allinea alla molecola</button>
+        <button class="btn" id="hybResetView" type="button">Reimposta</button>
+        <label><input id="hybAutoRotate" type="checkbox"> rotazione automatica</label>
+      </div>
+      <div class="orbitalLegend">
+        <span><i class="lobeKey" style="background:#4f73d5"></i>lobo maggiore (+)</span>
+        <span><i class="lobeKey" style="background:#d48aa5"></i>lobo minore (−)</span>
+        <span><i class="lobeKey" style="background:#8d77bd"></i>orbitale p non ibridato</span>
+        <span><i class="lobeKey" style="background:#d49a3a"></i>coppia solitaria</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="hybWarning" id="hybCaveat"></div>
+</div>
+
+<div class="card resonanceCard hidden" id="resonanceCard">
+  <div class="kicker">Ibrido di risonanza</div>
+  <div class="value" id="resTitle" style="margin-top:6px">Delocalizzazione elettronica</div>
+  <div class="small" id="resSummary" style="margin-top:5px"></div>
+  <div class="resStats">
+    <div><div class="kicker">Forme limite equivalenti</div><div id="resCount" style="font-weight:800;margin-top:5px"></div></div>
+    <div><div class="kicker">Ordine di legame medio</div><div id="resBondOrder" style="font-weight:800;margin-top:5px"></div></div>
+    <div><div class="kicker">Carica delocalizzata</div><div id="resChargeText" style="font-weight:800;margin-top:5px"></div></div>
+  </div>
+  <div class="resGrid">
+    <div class="resPanel">
+      <div class="kicker">Forme limite di risonanza</div>
+      <div class="small" style="margin-top:5px">Le strutture seguenti non sono molecole che si trasformano una nell’altra: sono rappresentazioni limite della stessa distribuzione elettronica.</div>
+      <div id="resForms" class="resForms"></div>
+      <div class="resControls">
+        <button class="btn primary" id="resAnimate" type="button">▶ Anima le forme limite</button>
+        <button class="btn" id="resStop" type="button">Ferma forme</button>
+      </div>
+    </div>
+    <div class="resPanel">
+      <div class="kicker">Ibrido reale</div>
+      <div class="small" style="margin-top:5px">L’ibrido reale è mostrato sempre. Nei sistemi planari la componente π appare come una nube elettronica continua sopra e sotto il piano σ, generata dalla sovrapposizione degli orbitali p paralleli.</div>
+      <div class="resHybridWrap" style="margin-top:10px">
+        <div class="resCanvasBadge">trascina per ruotare • rotella per zoomare</div>
+        <canvas id="resCanvas" width="520" height="385" aria-label="Rappresentazione tridimensionale della componente pi greco delocalizzata"></canvas>
+      </div>
+      <div class="resHybridControls">
+        <button class="btn" id="resIso" type="button">Isometrica</button>
+        <button class="btn" id="resPlane" type="button">Piano molecolare</button>
+        <button class="btn" id="resSide" type="button">Vista laterale</button>
+        <label><input id="resShowP" type="checkbox" checked> orbitali p</label>
+        <label><input id="resAnimateDensity" type="checkbox" checked> nube π animata</label>
+      </div>
+      <div class="resLegend">
+        <span><i class="resLineKey"></i>ossatura σ</span>
+        <span><i class="resCloudKey top"></i>nube π sopra il piano (+)</span>
+        <span><i class="resCloudKey bottom"></i>nube π sotto il piano (−)</span>
+        <span><i class="resPKey"></i>orbitali p paralleli</span>
+        <span><i class="resCharge">δ</i>carica distribuita</span>
+      </div>
+      <div class="resPiExplain" id="resPiExplain">I due colori distinguono le due fasi dell’orbitale π sopra e sotto il piano molecolare; non rappresentano due legami separati.</div>
+    </div>
+  </div>
+  <div class="resNote" id="resNote"></div>
+</div>
+</div>
+</section>
+
+<section id="practice" class="hidden">
+<div class="grid two">
+<div class="card">
+<div class="kicker">Esercizio</div>
+<div class="value" id="qFormula" style="font-size:2rem"></div>
+<p class="small">Determina formula VSEPR, geometria elettronica e geometria molecolare.</p>
+<label for="qAxe">Formula VSEPR</label><input id="qAxe" placeholder="es. AX3E">
+<label for="qElectron" style="margin-top:12px">Geometria elettronica</label><select id="qElectron"></select>
+<label for="qMolecular" style="margin-top:12px">Geometria molecolare</label><select id="qMolecular"></select>
+<label for="qHybrid" style="margin-top:12px">Ibridazione dell’atomo centrale</label><select id="qHybrid"></select>
+<div class="row" style="margin-top:14px"><button class="btn primary" id="check">Controlla</button><button class="btn" id="next">Nuova molecola</button></div>
+<div id="qStatus" class="status" aria-live="polite"></div>
+</div>
+<div class="card">
+<div class="kicker">Suggerimento</div>
+<p class="small">1. Disegna la struttura di Lewis.<br>2. Conta i domini elettronici attorno all’atomo centrale.<br>3. Ricorda: un legame singolo, doppio o triplo conta come <strong>un solo dominio</strong>.<br>4. Prima determina la geometria elettronica, poi elimina mentalmente le coppie solitarie per ottenere quella molecolare.</p>
+<div id="solution" class="hidden"><hr style="border:0;border-top:1px solid var(--border);margin:18px 0"><div class="kicker">Soluzione</div><div class="small" id="solText" style="font-size:1rem;color:var(--text);line-height:1.6"></div></div>
+</div>
+</div>
+</section>
+
+<section id="archive" class="hidden">
+<div class="card">
+<div class="row">
+<div class="grow"><label for="filterGeom">Filtra per geometria molecolare</label><select id="filterGeom"><option value="">Tutte</option></select></div>
+<div class="grow"><label for="searchArchive">Cerca</label><input id="searchArchive" placeholder="formula, geometria, VSEPR..."></div>
+</div>
+</div>
+<div class="scroll" style="margin-top:14px;background:white">
+<table><thead><tr><th>Specie</th><th>VSEPR</th><th>Ibridazione</th><th>Geom. elettronica</th><th>Geom. molecolare</th><th>Angoli</th></tr></thead><tbody id="tbody"></tbody></table>
+</div>
+</section>
+</main>
+
+<footer>VSEPR Lab • materiale didattico interattivo</footer>
+
+<script>
+const DATA = [{"formula": "CO₂", "central": "C", "axe": "AX₂", "domains": 2, "lone": 0, "electron": "Lineare", "molecular": "Lineare", "angles": "180°", "polarity": "Apolare", "note": "Due domini di legame e nessuna coppia solitaria sull’atomo centrale."}, {"formula": "CS₂", "central": "C", "axe": "AX₂", "domains": 2, "lone": 0, "electron": "Lineare", "molecular": "Lineare", "angles": "180°", "polarity": "Apolare", "note": "I due doppi legami contano ciascuno come un solo dominio elettronico."}, {"formula": "BeCl₂", "central": "Be", "axe": "AX₂", "domains": 2, "lone": 0, "electron": "Lineare", "molecular": "Lineare", "angles": "180°", "polarity": "Apolare", "note": "Due domini elettronici attorno al berillio."}, {"formula": "HCN", "central": "C", "axe": "AX₂", "domains": 2, "lone": 0, "electron": "Lineare", "molecular": "Lineare", "angles": "180°", "polarity": "Polare", "note": "Il triplo legame C≡N conta come un solo dominio."}, {"formula": "XeF₂", "central": "Xe", "axe": "AX₂E₃", "domains": 5, "lone": 3, "electron": "Bipiramidale trigonale", "molecular": "Lineare", "angles": "180°", "polarity": "Apolare", "note": "Le tre coppie solitarie occupano posizioni equatoriali."}, {"formula": "I₃⁻", "central": "I", "axe": "AX₂E₃", "domains": 5, "lone": 3, "electron": "Bipiramidale trigonale", "molecular": "Lineare", "angles": "180°", "polarity": "—", "note": "I due legami restano nelle posizioni assiali."}, {"formula": "BF₃", "central": "B", "axe": "AX₃", "domains": 3, "lone": 0, "electron": "Planare triangolare", "molecular": "Planare triangolare", "angles": "120°", "polarity": "Apolare", "note": "Tre domini di legame e nessuna coppia solitaria."}, {"formula": "BCl₃", "central": "B", "axe": "AX₃", "domains": 3, "lone": 0, "electron": "Planare triangolare", "molecular": "Planare triangolare", "angles": "120°", "polarity": "Apolare", "note": "Tre domini equivalenti attorno al boro."}, {"formula": "SO₃", "central": "S", "axe": "AX₃", "domains": 3, "lone": 0, "electron": "Planare triangolare", "molecular": "Planare triangolare", "angles": "120°", "polarity": "Apolare", "note": "Tre domini di legame attorno allo zolfo."}, {"formula": "NO₃⁻", "central": "N", "axe": "AX₃", "domains": 3, "lone": 0, "electron": "Planare triangolare", "molecular": "Planare triangolare", "angles": "120°", "polarity": "—", "note": "La risonanza rende equivalenti i legami N–O."}, {"formula": "CO₃²⁻", "central": "C", "axe": "AX₃", "domains": 3, "lone": 0, "electron": "Planare triangolare", "molecular": "Planare triangolare", "angles": "120°", "polarity": "—", "note": "Tre domini elettronici attorno al carbonio."}, {"formula": "AlCl₃", "central": "Al", "axe": "AX₃", "domains": 3, "lone": 0, "electron": "Planare triangolare", "molecular": "Planare triangolare", "angles": "120°", "polarity": "Apolare", "note": "Considerando la specie monomerica, la geometria è planare triangolare."}, {"formula": "SO₂", "central": "S", "axe": "AX₂E", "domains": 3, "lone": 1, "electron": "Planare triangolare", "molecular": "Angolare", "angles": "<120°", "polarity": "Polare", "note": "Una coppia solitaria rende la molecola angolare."}, {"formula": "O₃", "central": "O", "axe": "AX₂E", "domains": 3, "lone": 1, "electron": "Planare triangolare", "molecular": "Angolare", "angles": "<120°", "polarity": "Polare", "note": "L’ossigeno centrale ha una coppia solitaria."}, {"formula": "NO₂⁻", "central": "N", "axe": "AX₂E", "domains": 3, "lone": 1, "electron": "Planare triangolare", "molecular": "Angolare", "angles": "<120°", "polarity": "—", "note": "Due legami e una coppia solitaria."}, {"formula": "H₂O", "central": "O", "axe": "AX₂E₂", "domains": 4, "lone": 2, "electron": "Tetraedrica", "molecular": "Angolare", "angles": "≈104,5°", "polarity": "Polare", "note": "Due coppie solitarie comprimono l’angolo H–O–H."}, {"formula": "H₂S", "central": "S", "axe": "AX₂E₂", "domains": 4, "lone": 2, "electron": "Tetraedrica", "molecular": "Angolare", "angles": "≈92°", "polarity": "Polare", "note": "Due legami e due coppie solitarie."}, {"formula": "OF₂", "central": "O", "axe": "AX₂E₂", "domains": 4, "lone": 2, "electron": "Tetraedrica", "molecular": "Angolare", "angles": "≈103°", "polarity": "Polare", "note": "Due coppie solitarie sull’ossigeno."}, {"formula": "CH₄", "central": "C", "axe": "AX₄", "domains": 4, "lone": 0, "electron": "Tetraedrica", "molecular": "Tetraedrica", "angles": "109,5°", "polarity": "Apolare", "note": "Quattro domini di legame equivalenti."}, {"formula": "CCl₄", "central": "C", "axe": "AX₄", "domains": 4, "lone": 0, "electron": "Tetraedrica", "molecular": "Tetraedrica", "angles": "109,5°", "polarity": "Apolare", "note": "Quattro legami e nessuna coppia solitaria."}, {"formula": "CF₄", "central": "C", "axe": "AX₄", "domains": 4, "lone": 0, "electron": "Tetraedrica", "molecular": "Tetraedrica", "angles": "109,5°", "polarity": "Apolare", "note": "Disposizione tetraedrica simmetrica."}, {"formula": "SiCl₄", "central": "Si", "axe": "AX₄", "domains": 4, "lone": 0, "electron": "Tetraedrica", "molecular": "Tetraedrica", "angles": "109,5°", "polarity": "Apolare", "note": "Quattro domini di legame."}, {"formula": "NH₄⁺", "central": "N", "axe": "AX₄", "domains": 4, "lone": 0, "electron": "Tetraedrica", "molecular": "Tetraedrica", "angles": "109,5°", "polarity": "—", "note": "Lo ione ammonio non ha coppie solitarie sull’azoto."}, {"formula": "SO₄²⁻", "central": "S", "axe": "AX₄", "domains": 4, "lone": 0, "electron": "Tetraedrica", "molecular": "Tetraedrica", "angles": "109,5°", "polarity": "—", "note": "Quattro domini di legame attorno allo zolfo."}, {"formula": "NH₃", "central": "N", "axe": "AX₃E", "domains": 4, "lone": 1, "electron": "Tetraedrica", "molecular": "Piramidale trigonale", "angles": "≈107°", "polarity": "Polare", "note": "Una posizione tetraedrica è occupata da una coppia solitaria."}, {"formula": "NF₃", "central": "N", "axe": "AX₃E", "domains": 4, "lone": 1, "electron": "Tetraedrica", "molecular": "Piramidale trigonale", "angles": "≈102,5°", "polarity": "Polare", "note": "Tre legami e una coppia solitaria."}, {"formula": "PH₃", "central": "P", "axe": "AX₃E", "domains": 4, "lone": 1, "electron": "Tetraedrica", "molecular": "Piramidale trigonale", "angles": "≈93,5°", "polarity": "Polare", "note": "Tre legami e una coppia solitaria sul fosforo."}, {"formula": "PCl₃", "central": "P", "axe": "AX₃E", "domains": 4, "lone": 1, "electron": "Tetraedrica", "molecular": "Piramidale trigonale", "angles": "≈100°", "polarity": "Polare", "note": "La coppia solitaria rende la forma piramidale."}, {"formula": "PF₃", "central": "P", "axe": "AX₃E", "domains": 4, "lone": 1, "electron": "Tetraedrica", "molecular": "Piramidale trigonale", "angles": "≈97°", "polarity": "Polare", "note": "Quattro domini elettronici, uno solitario."}, {"formula": "AsH₃", "central": "As", "axe": "AX₃E", "domains": 4, "lone": 1, "electron": "Tetraedrica", "molecular": "Piramidale trigonale", "angles": "≈92°", "polarity": "Polare", "note": "Tre legami e una coppia solitaria."}, {"formula": "PCl₅", "central": "P", "axe": "AX₅", "domains": 5, "lone": 0, "electron": "Bipiramidale trigonale", "molecular": "Bipiramidale trigonale", "angles": "90°, 120°, 180°", "polarity": "Apolare", "note": "Tre posizioni equatoriali e due assiali."}, {"formula": "PF₅", "central": "P", "axe": "AX₅", "domains": 5, "lone": 0, "electron": "Bipiramidale trigonale", "molecular": "Bipiramidale trigonale", "angles": "90°, 120°, 180°", "polarity": "Apolare", "note": "Cinque domini di legame."}, {"formula": "PBr₅", "central": "P", "axe": "AX₅", "domains": 5, "lone": 0, "electron": "Bipiramidale trigonale", "molecular": "Bipiramidale trigonale", "angles": "90°, 120°, 180°", "polarity": "Apolare", "note": "Cinque domini di legame."}, {"formula": "AsF₅", "central": "As", "axe": "AX₅", "domains": 5, "lone": 0, "electron": "Bipiramidale trigonale", "molecular": "Bipiramidale trigonale", "angles": "90°, 120°, 180°", "polarity": "Apolare", "note": "Cinque domini attorno all’arsenico."}, {"formula": "SbCl₅", "central": "Sb", "axe": "AX₅", "domains": 5, "lone": 0, "electron": "Bipiramidale trigonale", "molecular": "Bipiramidale trigonale", "angles": "90°, 120°, 180°", "polarity": "Apolare", "note": "Cinque domini elettronici."}, {"formula": "SF₄", "central": "S", "axe": "AX₄E", "domains": 5, "lone": 1, "electron": "Bipiramidale trigonale", "molecular": "Altalena (seesaw)", "angles": "<90°, <120°", "polarity": "Polare", "note": "La coppia solitaria preferisce una posizione equatoriale."}, {"formula": "SeF₄", "central": "Se", "axe": "AX₄E", "domains": 5, "lone": 1, "electron": "Bipiramidale trigonale", "molecular": "Altalena (seesaw)", "angles": "<90°, <120°", "polarity": "Polare", "note": "Una coppia solitaria in posizione equatoriale."}, {"formula": "TeF₄", "central": "Te", "axe": "AX₄E", "domains": 5, "lone": 1, "electron": "Bipiramidale trigonale", "molecular": "Altalena (seesaw)", "angles": "<90°, <120°", "polarity": "Polare", "note": "Cinque domini elettronici, uno solitario."}, {"formula": "TeCl₄", "central": "Te", "axe": "AX₄E", "domains": 5, "lone": 1, "electron": "Bipiramidale trigonale", "molecular": "Altalena (seesaw)", "angles": "<90°, <120°", "polarity": "Polare", "note": "Geometria molecolare ad altalena."}, {"formula": "SeCl₄", "central": "Se", "axe": "AX₄E", "domains": 5, "lone": 1, "electron": "Bipiramidale trigonale", "molecular": "Altalena (seesaw)", "angles": "<90°, <120°", "polarity": "Polare", "note": "Una coppia solitaria equatoriale."}, {"formula": "ClF₃", "central": "Cl", "axe": "AX₃E₂", "domains": 5, "lone": 2, "electron": "Bipiramidale trigonale", "molecular": "A T", "angles": "≈90°, 180°", "polarity": "Polare", "note": "Le due coppie solitarie occupano posizioni equatoriali."}, {"formula": "BrF₃", "central": "Br", "axe": "AX₃E₂", "domains": 5, "lone": 2, "electron": "Bipiramidale trigonale", "molecular": "A T", "angles": "≈90°, 180°", "polarity": "Polare", "note": "Due coppie solitarie equatoriali."}, {"formula": "IF₃", "central": "I", "axe": "AX₃E₂", "domains": 5, "lone": 2, "electron": "Bipiramidale trigonale", "molecular": "A T", "angles": "≈90°, 180°", "polarity": "Polare", "note": "Tre legami e due coppie solitarie."}, {"formula": "ICl₃", "central": "I", "axe": "AX₃E₂", "domains": 5, "lone": 2, "electron": "Bipiramidale trigonale", "molecular": "A T", "angles": "≈90°, 180°", "polarity": "Polare", "note": "Geometria molecolare a T."}, {"formula": "BrCl₃", "central": "Br", "axe": "AX₃E₂", "domains": 5, "lone": 2, "electron": "Bipiramidale trigonale", "molecular": "A T", "angles": "≈90°, 180°", "polarity": "Polare", "note": "Geometria molecolare a T."}, {"formula": "SF₆", "central": "S", "axe": "AX₆", "domains": 6, "lone": 0, "electron": "Ottaedrica", "molecular": "Ottaedrica", "angles": "90°, 180°", "polarity": "Apolare", "note": "Sei domini di legame equivalenti."}, {"formula": "SeF₆", "central": "Se", "axe": "AX₆", "domains": 6, "lone": 0, "electron": "Ottaedrica", "molecular": "Ottaedrica", "angles": "90°, 180°", "polarity": "Apolare", "note": "Sei domini elettronici."}, {"formula": "TeF₆", "central": "Te", "axe": "AX₆", "domains": 6, "lone": 0, "electron": "Ottaedrica", "molecular": "Ottaedrica", "angles": "90°, 180°", "polarity": "Apolare", "note": "Sei legami e nessuna coppia solitaria."}, {"formula": "PF₆⁻", "central": "P", "axe": "AX₆", "domains": 6, "lone": 0, "electron": "Ottaedrica", "molecular": "Ottaedrica", "angles": "90°, 180°", "polarity": "—", "note": "Sei domini di legame."}, {"formula": "SiF₆²⁻", "central": "Si", "axe": "AX₆", "domains": 6, "lone": 0, "electron": "Ottaedrica", "molecular": "Ottaedrica", "angles": "90°, 180°", "polarity": "—", "note": "Sei domini elettronici attorno al silicio."}, {"formula": "BrF₅", "central": "Br", "axe": "AX₅E", "domains": 6, "lone": 1, "electron": "Ottaedrica", "molecular": "Piramidale quadrata", "angles": "≈90°", "polarity": "Polare", "note": "Una posizione ottaedrica è occupata da una coppia solitaria."}, {"formula": "IF₅", "central": "I", "axe": "AX₅E", "domains": 6, "lone": 1, "electron": "Ottaedrica", "molecular": "Piramidale quadrata", "angles": "≈90°", "polarity": "Polare", "note": "Cinque legami e una coppia solitaria."}, {"formula": "ClF₅", "central": "Cl", "axe": "AX₅E", "domains": 6, "lone": 1, "electron": "Ottaedrica", "molecular": "Piramidale quadrata", "angles": "≈90°", "polarity": "Polare", "note": "Geometria elettronica ottaedrica."}, {"formula": "XeOF₄", "central": "Xe", "axe": "AX₅E", "domains": 6, "lone": 1, "electron": "Ottaedrica", "molecular": "Piramidale quadrata", "angles": "≈90°", "polarity": "Polare", "note": "Cinque domini di legame e una coppia solitaria."}, {"formula": "IOF₄⁻", "central": "I", "axe": "AX₅E", "domains": 6, "lone": 1, "electron": "Ottaedrica", "molecular": "Piramidale quadrata", "angles": "≈90°", "polarity": "—", "note": "Una coppia solitaria completa i sei domini elettronici."}, {"formula": "XeF₄", "central": "Xe", "axe": "AX₄E₂", "domains": 6, "lone": 2, "electron": "Ottaedrica", "molecular": "Planare quadrata", "angles": "90°, 180°", "polarity": "Apolare", "note": "Le due coppie solitarie occupano posizioni opposte."}, {"formula": "ICl₄⁻", "central": "I", "axe": "AX₄E₂", "domains": 6, "lone": 2, "electron": "Ottaedrica", "molecular": "Planare quadrata", "angles": "90°, 180°", "polarity": "—", "note": "Due coppie solitarie trans."}, {"formula": "BrF₄⁻", "central": "Br", "axe": "AX₄E₂", "domains": 6, "lone": 2, "electron": "Ottaedrica", "molecular": "Planare quadrata", "angles": "90°, 180°", "polarity": "—", "note": "Quattro legami sullo stesso piano."}, {"formula": "IF₄⁻", "central": "I", "axe": "AX₄E₂", "domains": 6, "lone": 2, "electron": "Ottaedrica", "molecular": "Planare quadrata", "angles": "90°, 180°", "polarity": "—", "note": "Due coppie solitarie opposte."}, {"formula": "XeCl₄", "central": "Xe", "axe": "AX₄E₂", "domains": 6, "lone": 2, "electron": "Ottaedrica", "molecular": "Planare quadrata", "angles": "90°, 180°", "polarity": "Apolare", "note": "Geometria molecolare planare quadrata."}];
+const tabs=[...document.querySelectorAll('nav button')];
+tabs.forEach(b=>b.addEventListener('click',()=>{tabs.forEach(x=>x.classList.remove('active'));b.classList.add('active');['explore','practice','archive'].forEach(id=>document.getElementById(id).classList.toggle('hidden',id!==b.dataset.tab));}));
+
+function norm(s){return (s||'').trim().toUpperCase().replaceAll('₀','0').replaceAll('₁','1').replaceAll('₂','2').replaceAll('₃','3').replaceAll('₄','4').replaceAll('₅','5').replaceAll('₆','6').replaceAll('₇','7').replaceAll('₈','8').replaceAll('₉','9').replaceAll('⁺','+').replaceAll('⁻','-').replaceAll('²','2').replaceAll('³','3').replace(/\s/g,'');}
+function sameFormula(a,b){let x=norm(a),y=norm(b); x=x.replace('2-','--').replace('-2','--'); y=y.replace('2-','--').replace('-2','--'); return x===y;}
+const dl=document.getElementById('formulas'); DATA.forEach(r=>{let o=document.createElement('option');o.value=r.formula;dl.appendChild(o);});
+
+document.getElementById('analyze').addEventListener('click',analyze);document.getElementById('formula').addEventListener('keydown',e=>{if(e.key==='Enter')analyze();});
+
+const canvas3d=document.getElementById('mol3d'), ctx3d=canvas3d.getContext('2d');
+let model3d=null, rotX=-0.42, rotY=0.62, dragging=false, lastPX=0, lastPY=0;
+let zoom3d=1, atomScale3d=1, autoRotate3d=false, raf3d=null, lastFrame3d=0;
+
+function asciiFormula(s){
+  return (s||'').replaceAll('₀','0').replaceAll('₁','1').replaceAll('₂','2').replaceAll('₃','3').replaceAll('₄','4')
+  .replaceAll('₅','5').replaceAll('₆','6').replaceAll('₇','7').replaceAll('₈','8').replaceAll('₉','9')
+  .replaceAll('⁺','').replaceAll('⁻','').replaceAll('²','2').replaceAll('³','3').replace(/[+\-]/g,'');
+}
+function ligandLabels(formula,central){
+  const f=asciiFormula(formula), re=/([A-Z][a-z]?)(\d*)/g; let m, counts={};
+  while((m=re.exec(f))!==null) counts[m[1]]=(counts[m[1]]||0)+(m[2]?parseInt(m[2],10):1);
+  if(counts[central]) counts[central]-=1;
+  const out=[]; Object.entries(counts).forEach(([el,n])=>{for(let i=0;i<n;i++) out.push(el);});
+  return out;
+}
+function norm3(v){const L=Math.hypot(v[0],v[1],v[2])||1;return [v[0]/L,v[1]/L,v[2]/L];}
+const SQ=Math.sqrt;
+function geometryPoints(r){
+  let lig=[], lone=[];
+  const TBP=[[0,1,0],[0,-1,0],[1,0,0],[-.5,0,SQ(3)/2],[-.5,0,-SQ(3)/2]];
+  const OCT=[[1,0,0],[-1,0,0],[0,1,0],[0,-1,0],[0,0,1],[0,0,-1]];
+  const TET=[[1,1,1],[-1,-1,1],[-1,1,-1],[1,-1,-1]].map(norm3);
+  const TRI=[[1,0,0],[-.5,0,SQ(3)/2],[-.5,0,-SQ(3)/2]];
+  const mol=r.molecular, elec=r.electron;
+  if(mol==='Lineare'){lig=[[0,1,0],[0,-1,0]]; if(r.lone===3) lone=[TBP[2],TBP[3],TBP[4]];}
+  else if(mol==='Planare triangolare') lig=TRI;
+  else if(mol==='Angolare'){
+    if(elec==='Planare triangolare'){lig=[TRI[1],TRI[2]];lone=[TRI[0]];}
+    else {lig=[TET[1],TET[2]];lone=[TET[0],TET[3]];}
+  }
+  else if(mol==='Tetraedrica') lig=TET;
+  else if(mol==='Piramidale trigonale'){lone=[TET[0]];lig=[TET[1],TET[2],TET[3]];}
+  else if(mol==='Bipiramidale trigonale') lig=TBP;
+  else if(mol.startsWith('Altalena')){lone=[TBP[2]];lig=[TBP[0],TBP[1],TBP[3],TBP[4]];}
+  else if(mol==='A T'){lone=[TBP[3],TBP[4]];lig=[TBP[0],TBP[1],TBP[2]];}
+  else if(mol==='Ottaedrica') lig=OCT;
+  else if(mol==='Piramidale quadrata'){lone=[OCT[5]];lig=[OCT[0],OCT[1],OCT[2],OCT[3],OCT[4]];}
+  else if(mol==='Planare quadrata'){lone=[OCT[4],OCT[5]];lig=[OCT[0],OCT[1],OCT[2],OCT[3]];}
+  return {lig,lone,domains:[...lig,...lone]};
+}
+function scaffoldEdges(r,g){
+  const n=g.domains.length, edges=[];
+  // Connect nearby domain vertices to suggest the parent polyhedron without clutter.
+  for(let i=0;i<n;i++) for(let j=i+1;j<n;j++){
+    const a=g.domains[i],b=g.domains[j],d=Math.hypot(a[0]-b[0],a[1]-b[1],a[2]-b[2]);
+    let keep=false;
+    if(r.domains===3) keep=d<1.9;
+    else if(r.domains===4) keep=d<1.75;
+    else if(r.domains===5) keep=d<1.8;
+    else if(r.domains===6) keep=d<1.5;
+    else if(r.domains===2) keep=true;
+    if(keep) edges.push([a,b]);
+  }
+  return edges;
+}
+function rotatePoint(p){
+  let [x,y,z]=p;
+  const cy=Math.cos(rotY),sy=Math.sin(rotY),cx=Math.cos(rotX),sx=Math.sin(rotX);
+  const x1=x*cy+z*sy, z1=-x*sy+z*cy;
+  const y1=y*cx-z1*sx, z2=y*sx+z1*cx;
+  return [x1,y1,z2];
+}
+function project(p,w,h){
+  const [x,y,z]=rotatePoint(p), base=Math.min(w,h)*.345*zoom3d, persp=1/(1.24-z*.19);
+  return [w/2+x*base*persp,h/2-y*base*persp,z,persp];
+}
+function fitCanvas(){
+  const dpr=Math.min(window.devicePixelRatio||1,2),rect=canvas3d.getBoundingClientRect();
+  const w=Math.max(320,Math.round(rect.width)),h=Math.max(320,Math.round(rect.height));
+  if(canvas3d.width!==Math.round(w*dpr)||canvas3d.height!==Math.round(h*dpr)){canvas3d.width=Math.round(w*dpr);canvas3d.height=Math.round(h*dpr);}
+  ctx3d.setTransform(dpr,0,0,dpr,0,0); return [w,h];
+}
+function atomColor(el,central=false){
+  if(central) return '#364152';
+  const c={H:'#e5e7eb',F:'#66bd62',Cl:'#66bd62',Br:'#a9573a',I:'#7754a6',O:'#d9534f',N:'#4c72c9',S:'#d3b037',P:'#df8734',B:'#c6956b',C:'#505967',Si:'#9a8977',Xe:'#61a4b7',Se:'#c58a43',Te:'#8c6c5d',As:'#8b6a93',Sb:'#858585',Be:'#91ad63',Al:'#9aa0aa'};
+  return c[el]||'#758be3';
+}
+function rgb(hex){
+  const n=parseInt(hex.slice(1),16);return [(n>>16)&255,(n>>8)&255,n&255];
+}
+function mix(hex,white){
+  const [r,g,b]=rgb(hex),t=Math.max(0,Math.min(1,white));
+  return `rgb(${Math.round(r+(255-r)*t)},${Math.round(g+(255-g)*t)},${Math.round(b+(255-b)*t)})`;
+}
+function drawSphere(x,y,r,color,label,textColor='#fff',ring=false){
+  ctx3d.save();
+  ctx3d.shadowColor='rgba(24,32,48,.28)';ctx3d.shadowBlur=Math.max(6,r*.48);ctx3d.shadowOffsetY=Math.max(2,r*.13);
+  const g=ctx3d.createRadialGradient(x-r*.38,y-r*.42,r*.04,x+r*.08,y+r*.08,r*1.05);
+  g.addColorStop(0,mix(color,.88));g.addColorStop(.19,mix(color,.48));g.addColorStop(.55,color);g.addColorStop(.86,mix(color,.08));g.addColorStop(1,'#273142');
+  ctx3d.beginPath();ctx3d.arc(x,y,r,0,Math.PI*2);ctx3d.fillStyle=g;ctx3d.fill();
+  ctx3d.shadowColor='transparent';
+  ctx3d.strokeStyle='rgba(255,255,255,.80)';ctx3d.lineWidth=Math.max(1.2,r*.05);ctx3d.stroke();
+  if(ring){ctx3d.beginPath();ctx3d.arc(x,y,r+5,0,Math.PI*2);ctx3d.strokeStyle='rgba(255,255,255,.96)';ctx3d.lineWidth=4;ctx3d.stroke();
+    ctx3d.beginPath();ctx3d.arc(x,y,r+8,0,Math.PI*2);ctx3d.strokeStyle='rgba(53,89,214,.34)';ctx3d.lineWidth=2.5;ctx3d.stroke();}
+  if(label&&document.getElementById('showLabels').checked){
+    ctx3d.fillStyle=textColor;ctx3d.font=`800 ${Math.max(12,r*.60)}px system-ui`;ctx3d.textAlign='center';ctx3d.textBaseline='middle';
+    ctx3d.shadowColor='rgba(0,0,0,.45)';ctx3d.shadowBlur=2;ctx3d.fillText(label,x,y+1);
+  }
+  ctx3d.restore();
+}
+function clipSegment(a,b,ra,rb){
+  const dx=b[0]-a[0],dy=b[1]-a[1],L=Math.hypot(dx,dy)||1,ux=dx/L,uy=dy/L;
+  return [[a[0]+ux*ra,a[1]+uy*ra],[b[0]-ux*rb,b[1]-uy*rb]];
+}
+function drawBond(a,b,ra,rb,depth){
+  const [p1,p2]=clipSegment(a,b,ra,rb);
+  ctx3d.save();ctx3d.lineCap='round';
+  const grad=ctx3d.createLinearGradient(p1[0],p1[1],p2[0],p2[1]);
+  grad.addColorStop(0,'#777f8d');grad.addColorStop(.38,'#cfd4dc');grad.addColorStop(.62,'#eef1f5');grad.addColorStop(1,'#7b8491');
+  ctx3d.strokeStyle=grad;ctx3d.lineWidth=Math.max(8,12*zoom3d*(.95+depth*.035));
+  ctx3d.shadowColor='rgba(30,38,54,.18)';ctx3d.shadowBlur=4;
+  ctx3d.beginPath();ctx3d.moveTo(...p1);ctx3d.lineTo(...p2);ctx3d.stroke();
+  ctx3d.shadowColor='transparent';ctx3d.strokeStyle='rgba(255,255,255,.55)';ctx3d.lineWidth=Math.max(1.3,2.2*zoom3d);
+  ctx3d.beginPath();ctx3d.moveTo(p1[0],p1[1]-1.5);ctx3d.lineTo(p2[0],p2[1]-1.5);ctx3d.stroke();ctx3d.restore();
+}
+function drawElectronLobe(x,y,persp,depth){
+  ctx3d.save();ctx3d.translate(x,y);ctx3d.rotate(-.18);
+  const sx=15*persp*atomScale3d,sy=9*persp*atomScale3d;
+  ctx3d.shadowColor='rgba(105,65,10,.18)';ctx3d.shadowBlur=6;
+  const g=ctx3d.createRadialGradient(-sx*.25,-sy*.25,1,0,0,sx*1.25);
+  g.addColorStop(0,'rgba(255,230,165,.95)');g.addColorStop(.42,'rgba(224,167,63,.84)');g.addColorStop(1,'rgba(184,113,25,.52)');
+  ctx3d.fillStyle=g;ctx3d.beginPath();ctx3d.ellipse(-sx*.60,0,sx*.72,sy,0,0,Math.PI*2);ctx3d.fill();
+  ctx3d.beginPath();ctx3d.ellipse(sx*.60,0,sx*.72,sy,0,0,Math.PI*2);ctx3d.fill();
+  ctx3d.restore();
+}
+function drawScaffold(r,g,w,h){
+  if(!document.getElementById('showScaffold').checked) return;
+  ctx3d.save();ctx3d.setLineDash([5,6]);ctx3d.lineWidth=1.2;ctx3d.strokeStyle='rgba(77,96,145,.22)';
+  scaffoldEdges(r,g).forEach(([a,b])=>{const A=project(a,w,h),B=project(b,w,h);ctx3d.beginPath();ctx3d.moveTo(A[0],A[1]);ctx3d.lineTo(B[0],B[1]);ctx3d.stroke();});
+  ctx3d.restore();
+}
+function drawGroundShadow(w,h){
+  ctx3d.save();const g=ctx3d.createRadialGradient(w/2,h*.69,4,w/2,h*.69,Math.min(w,h)*.27);
+  g.addColorStop(0,'rgba(43,54,76,.13)');g.addColorStop(1,'rgba(43,54,76,0)');
+  ctx3d.fillStyle=g;ctx3d.beginPath();ctx3d.ellipse(w/2,h*.69,Math.min(w,h)*.27,Math.min(w,h)*.055,0,0,Math.PI*2);ctx3d.fill();ctx3d.restore();
+}
+function draw3D(r){
+  model3d=r;if(!r)return;
+  const [w,h]=fitCanvas();ctx3d.clearRect(0,0,w,h);drawGroundShadow(w,h);
+  const G=geometryPoints(r),labels=ligandLabels(r.formula,r.central),center=project([0,0,0],w,h);
+  drawScaffold(r,G,w,h);
+  const showLP=document.getElementById('showLonePairs').checked;
+  const atoms=G.lig.map((p,i)=>({kind:'atom',pr:project(p,w,h),label:labels[i]||'X'}));
+  const lps=showLP?G.lone.map(p=>({kind:'lone',pr:project(p,w,h)})):[];
+  const cR=34*atomScale3d;
+
+  // Depth-aware painter: back features -> central -> front features.
+  atoms.filter(a=>a.pr[2]<0).sort((a,b)=>a.pr[2]-b.pr[2]).forEach(a=>{
+    const rA=(21*a.pr[3]+5)*atomScale3d;drawBond(center,a.pr,cR*.72,rA*.78,a.pr[2]);
+  });
+  [...atoms.filter(a=>a.pr[2]<0),...lps.filter(a=>a.pr[2]<0)].sort((a,b)=>a.pr[2]-b.pr[2]).forEach(it=>{
+    if(it.kind==='atom'){const rr=(21*it.pr[3]+5)*atomScale3d;drawSphere(it.pr[0],it.pr[1],rr,atomColor(it.label),it.label,it.label==='H'?'#344054':'#fff');}
+    else drawElectronLobe(it.pr[0],it.pr[1],it.pr[3],it.pr[2]);
+  });
+
+  drawSphere(center[0],center[1],cR,atomColor(r.central,true),r.central,'#fff',true);
+
+  atoms.filter(a=>a.pr[2]>=0).sort((a,b)=>a.pr[2]-b.pr[2]).forEach(a=>{
+    const rA=(21*a.pr[3]+5)*atomScale3d;drawBond(center,a.pr,cR*.72,rA*.78,a.pr[2]);
+  });
+  [...atoms.filter(a=>a.pr[2]>=0),...lps.filter(a=>a.pr[2]>=0)].sort((a,b)=>a.pr[2]-b.pr[2]).forEach(it=>{
+    if(it.kind==='atom'){const rr=(21*it.pr[3]+5)*atomScale3d;drawSphere(it.pr[0],it.pr[1],rr,atomColor(it.label),it.label,it.label==='H'?'#344054':'#fff');}
+    else drawElectronLobe(it.pr[0],it.pr[1],it.pr[3],it.pr[2]);
+  });
+
+  // A subtle halo and label keep the central atom identifiable without flattening depth.
+  ctx3d.save();ctx3d.beginPath();ctx3d.arc(center[0],center[1],cR+8,0,Math.PI*2);ctx3d.strokeStyle='rgba(255,255,255,.78)';ctx3d.lineWidth=2;ctx3d.stroke();
+  if(document.getElementById('showLabels').checked){ctx3d.fillStyle='#fff';ctx3d.font=`800 ${Math.max(17,cR*.58)}px system-ui`;ctx3d.textAlign='center';ctx3d.textBaseline='middle';ctx3d.shadowColor='rgba(0,0,0,.72)';ctx3d.shadowBlur=4;ctx3d.fillText(r.central,center[0],center[1]+1);}
+  ctx3d.restore();
+
+  ctx3d.fillStyle='#566174';ctx3d.font='600 13px system-ui';ctx3d.textAlign='left';ctx3d.textBaseline='alphabetic';
+  ctx3d.fillText(`${r.formula}   •   ${r.axe}   •   ${r.molecular}`,14,h-16);
+}
+function stopAutoFrame(){if(raf3d){cancelAnimationFrame(raf3d);raf3d=null;}}
+function autoFrame(ts){
+  if(!autoRotate3d||!model3d){raf3d=null;return;}
+  if(!lastFrame3d)lastFrame3d=ts;const dt=Math.min(40,ts-lastFrame3d);lastFrame3d=ts;
+  rotY+=dt*.00034;draw3D(model3d);raf3d=requestAnimationFrame(autoFrame);
+}
+function setAuto(v){autoRotate3d=v;document.getElementById('autoRotate').checked=v;lastFrame3d=0;stopAutoFrame();if(v)raf3d=requestAnimationFrame(autoFrame);}
+function setView(x,y){setAuto(false);rotX=x;rotY=y;if(model3d)draw3D(model3d);}
+canvas3d.addEventListener('pointerdown',e=>{dragging=true;setAuto(false);lastPX=e.clientX;lastPY=e.clientY;canvas3d.setPointerCapture(e.pointerId);});
+canvas3d.addEventListener('pointermove',e=>{if(!dragging)return;rotY+=(e.clientX-lastPX)*.0105;rotX+=(e.clientY-lastPY)*.0105;rotX=Math.max(-1.55,Math.min(1.55,rotX));lastPX=e.clientX;lastPY=e.clientY;if(model3d)draw3D(model3d);});
+canvas3d.addEventListener('pointerup',e=>{dragging=false;try{canvas3d.releasePointerCapture(e.pointerId)}catch(_){}});canvas3d.addEventListener('pointercancel',()=>dragging=false);
+canvas3d.addEventListener('wheel',e=>{e.preventDefault();zoom3d=Math.max(.70,Math.min(1.55,zoom3d+(e.deltaY<0?.055:-.055)));const z=Math.round(zoom3d*100);document.getElementById('zoom3d').value=z;document.getElementById('zoomLabel').textContent=z+'%';if(model3d)draw3D(model3d);},{passive:false});
+document.getElementById('viewIso').addEventListener('click',()=>setView(-.42,.62));
+document.getElementById('viewFront').addEventListener('click',()=>setView(0,0));
+document.getElementById('viewTop').addEventListener('click',()=>setView(-Math.PI/2+.03,0));
+document.getElementById('reset3d').addEventListener('click',()=>{rotX=-.42;rotY=.62;zoom3d=1;atomScale3d=1;document.getElementById('zoom3d').value=100;document.getElementById('zoomLabel').textContent='100%';document.getElementById('atomScale3d').value=100;document.getElementById('atomScaleLabel').textContent='100%';document.getElementById('showLonePairs').checked=true;document.getElementById('showScaffold').checked=true;document.getElementById('showLabels').checked=true;setAuto(false);if(model3d)draw3D(model3d);});
+['showLonePairs','showScaffold','showLabels'].forEach(id=>document.getElementById(id).addEventListener('change',()=>{if(model3d)draw3D(model3d);}));
+document.getElementById('autoRotate').addEventListener('change',e=>setAuto(e.target.checked));
+document.getElementById('zoom3d').addEventListener('input',e=>{zoom3d=Number(e.target.value)/100;document.getElementById('zoomLabel').textContent=e.target.value+'%';if(model3d)draw3D(model3d);});
+document.getElementById('atomScale3d').addEventListener('input',e=>{atomScale3d=Number(e.target.value)/100;document.getElementById('atomScaleLabel').textContent=e.target.value+'%';if(model3d)draw3D(model3d);});
+window.addEventListener('resize',()=>{if(model3d)draw3D(model3d);});
+
+
+const HYB_INFO={
+  2:{name:'sp',mix:'1s + 1p',count:2,pLeft:2,summary:'Due domini elettronici → due orbitali ibridi sp orientati a 180°.'},
+  3:{name:'sp²',mix:'1s + 2p',count:3,pLeft:1,summary:'Tre domini elettronici → tre orbitali ibridi sp² complanari a circa 120°.'},
+  4:{name:'sp³',mix:'1s + 3p',count:4,pLeft:0,summary:'Quattro domini elettronici → quattro orbitali ibridi sp³ diretti verso i vertici di un tetraedro.'},
+  5:{name:'sp³d',mix:'1s + 3p + 1d',count:5,pLeft:0,summary:'Cinque domini elettronici → nel modello scolastico classico, cinque orbitali ibridi sp³d.'},
+  6:{name:'sp³d²',mix:'1s + 3p + 2d',count:6,pLeft:0,summary:'Sei domini elettronici → nel modello scolastico classico, sei orbitali ibridi sp³d².'}
+};
+const ATOM_VALENCE={
+  Be:{n:2,e:2},B:{n:2,e:3},C:{n:2,e:4},N:{n:2,e:5},O:{n:2,e:6},
+  Al:{n:3,e:3},Si:{n:3,e:4},P:{n:3,e:5},S:{n:3,e:6},Cl:{n:3,e:7},
+  As:{n:4,e:5},Se:{n:4,e:6},Br:{n:4,e:7},
+  Sb:{n:5,e:5},Te:{n:5,e:6},I:{n:5,e:7},Xe:{n:5,e:8}
+};
+// Conteggio formale utile solo per costruire lo schema didattico delle caselle.
+const EFFECTIVE_E={
+  'NH₄⁺':4,'NO₃⁻':4,'O₃':5,'SO₂':5,'SO₃':4,
+  'PF₆⁻':6,'SiF₆²⁻':6,'I₃⁻':8,'ICl₄⁻':8,'BrF₄⁻':8,'IF₄⁻':8,'IOF₄⁻':8
+};
+
+function hybridizationFor(r){return HYB_INFO[r.domains]||null;}
+function atomInfo(r){return ATOM_VALENCE[r.central]||{n:3,e:r.domains};}
+function effectiveElectrons(r){return EFFECTIVE_E[r.formula] ?? atomInfo(r).e;}
+
+function hundFill(e,count){
+  const occ=Array(count).fill(0);
+  for(let i=0;i<Math.min(e,count);i++)occ[i]=1;
+  for(let i=0;i<Math.max(0,e-count);i++)occ[i]+=1;
+  return occ;
+}
+function superscript(n){
+  const m={'0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹'};
+  return String(n).split('').map(x=>m[x]||x).join('');
+}
+function neutralGroundConfig(r,showD=false){
+  const a=atomInfo(r),s=Math.min(2,a.e),p=Math.max(0,a.e-s);
+  return {n:a.n,s:[s],p:hundFill(p,3),d:showD?Array(r.domains===6?2:1).fill(0):[]};
+}
+function piUnpairedCount(r,h){
+  const hybridE=2*r.lone+(r.domains-r.lone);
+  const residual=Math.max(0,effectiveElectrons(r)-hybridE);
+  return Math.min(h.pLeft,residual);
+}
+function promotedConfig(r){
+  const h=hybridizationFor(r),a=atomInfo(r),E=effectiveElectrons(r);
+  const sigma=r.domains-r.lone;
+  let singles=sigma+piUnpairedCount(r,h);
+  // An electron count and the number of singles must have the same parity.
+  if((E-singles)%2!==0){
+    if(singles+1<=6 && singles+1<=E)singles+=1;
+    else if(singles>0)singles-=1;
+  }
+  let pairs=Math.max(0,(E-singles)/2);
+  let need=Math.ceil(pairs+singles);
+  let dCount=h.name==='sp³d'?1:h.name==='sp³d²'?2:0;
+  while(4+dCount<need && dCount<5)dCount++;
+  const total=4+dCount,occ=Array(total).fill(0);
+  let k=0;
+  for(let i=0;i<pairs&&k<total;i++,k++)occ[k]=2;
+  for(let i=0;i<singles&&k<total;i++,k++)occ[k]=1;
+  return {n:a.n,s:[occ[0]||0],p:occ.slice(1,4),d:occ.slice(4),effective:E,singles,pairs};
+}
+function groundNotation(c){
+  const parts=[],n=c.n;
+  const se=c.s.reduce((a,b)=>a+b,0),pe=c.p.reduce((a,b)=>a+b,0),de=c.d.reduce((a,b)=>a+b,0);
+  if(se)parts.push(`${n}s${superscript(se)}`);
+  if(pe)parts.push(`${n}p${superscript(pe)}`);
+  if(de)parts.push(`${n}d${superscript(de)}`);
+  return parts.join(' ');
+}
+function configChanged(a,b){
+  const x=[...a.s,...a.p,...a.d],y=[...b.s,...b.p,...b.d];
+  const L=Math.max(x.length,y.length);
+  for(let i=0;i<L;i++)if((x[i]||0)!==(y[i]||0))return true;
+  return false;
+}
+function formalChargeNote(r){
+  const neutral=atomInfo(r).e,eff=effectiveElectrons(r),d=neutral-eff;
+  if(!d)return '';
+  const sign=d>0?`+${d===1?'':d}`:`−${Math.abs(d)===1?'':Math.abs(d)}`;
+  return ` Nel conteggio della forma di Lewis usata nello schema, ${r.central} ha carica formale ${sign}.`;
+}
+
+function orbitalBox(label,occ,cls=''){
+  const arrows=occ===2?'<span class="electron up">↑</span><span class="electron down">↓</span>':occ===1?'<span class="electron up">↑</span>':'';
+  return `<div class="orbBox ${cls}">${arrows}<span class="orbLabel">${label}</span></div>`;
+}
+function subshellBlock(n,type,occ,cls=''){
+  if(!occ.length)return '';
+  return `<div class="subshellBlock"><div class="subshellName">${n}${type}</div><div class="orbitalGroup">${occ.map((o,i)=>orbitalBox(`${n}${type}${occ.length>1?' '+(i+1):''}`,o,cls)).join('')}</div></div>`;
+}
+function configDiagram(c,cls=''){
+  return `<div class="orbitalDiagram">${subshellBlock(c.n,'s',c.s,cls)}${subshellBlock(c.n,'p',c.p,cls)}${subshellBlock(c.n,'d',c.d,cls)}</div>`;
+}
+function residualPConfig(r,h){
+  if(!h.pLeft)return [];
+  const hybridE=2*r.lone+(r.domains-r.lone),remain=Math.max(0,effectiveElectrons(r)-hybridE);
+  return hundFill(Math.min(remain,2*h.pLeft),h.pLeft);
+}
+function hybridDiagram(r,h){
+  const occ=[];
+  for(let i=0;i<r.lone;i++)occ.push(2);
+  for(let i=0;i<r.domains-r.lone;i++)occ.push(1);
+  const hybrid=`<div class="subshellBlock"><div class="subshellName">${h.name}</div><div class="orbitalGroup">${occ.map((o,i)=>orbitalBox(`${h.name} ${i+1}`,o,'hybridBox')).join('')}</div></div>`;
+  const pOcc=residualPConfig(r,h);
+  const residual=pOcc.length?`<div class="mixArrow">+</div><div class="subshellBlock"><div class="subshellName">p non ibridati</div><div class="orbitalGroup">${pOcc.map((o,i)=>orbitalBox(`p ${i+1}`,o,'pResidual')).join('')}</div></div>`:'';
+  return `<div class="orbitalDiagram">${hybrid}${residual}</div>`;
+}
+
+let hybridPhase='hybrid',hybAnimTimers=[];
+function clearHybridTimers(){hybAnimTimers.forEach(clearTimeout);hybAnimTimers=[];}
+function setPhaseButtons(phase){
+  [['ground','phaseGround'],['excited','phaseExcited'],['hybrid','phaseHybrid']].forEach(([p,id])=>document.getElementById(id).classList.toggle('active',p===phase));
+}
+function renderOrbitalBoxes(r,phase='hybrid'){
+  const h=hybridizationFor(r);if(!h)return;
+  hybridPhase=phase;setPhaseButtons(phase);
+  const stage=document.getElementById('orbitalStage'),caption=document.getElementById('phaseCaption');
+  const ground=neutralGroundConfig(r,r.domains>=5),exc=promotedConfig(r);
+  stage.classList.remove('stageEnter');void stage.offsetWidth;stage.classList.add('stageEnter');
+  if(phase==='ground'){
+    stage.innerHTML=configDiagram(ground);
+    caption.innerHTML=`<strong>1 · Stato non ibridato.</strong> Configurazione di valenza dell’atomo ${r.central} isolato: <strong>${groundNotation(ground)}</strong>. Gli elettroni sono già visibili nelle caselle secondo Pauli e Hund.`;
+  }else if(phase==='excited'){
+    stage.innerHTML=configDiagram(exc,'promoted');
+    const changed=configChanged(ground,exc)||effectiveElectrons(r)!==atomInfo(r).e;
+    caption.innerHTML=changed
+      ? `<strong>2 · Stato promosso / assetto di valenza.</strong> Gli elettroni vengono ridistribuiti per ottenere gli orbitali semipieni necessari al modello di legame. Schema: <strong>${groundNotation(exc)}</strong>.${formalChargeNote(r)}`
+      : `<strong>2 · Nessuna promozione necessaria.</strong> L’assetto degli elettroni di valenza è già compatibile con il numero di legami σ e di coppie solitarie previsto dal modello.`;
+  }else{
+    stage.innerHTML=hybridDiagram(r,h);
+    caption.innerHTML=`<strong>3 · Ibridazione.</strong> Gli orbitali si combinano in <strong>${h.count} orbitali ${h.name}</strong>. Le caselle con ↑↓ rappresentano coppie solitarie; quelle con ↑ sono disponibili per legami σ.`;
+  }
+  document.getElementById('animationStatus').textContent=phase==='ground'?'fase 1/3':phase==='excited'?'fase 2/3':'fase 3/3';
+}
+function piDescription(r,h){
+  const special={
+    'CO₂':'Il carbonio usa due orbitali sp per i due legami σ; i due orbitali p non ibridati, tra loro perpendicolari, partecipano ai due legami π.',
+    'CS₂':'Il carbonio usa due orbitali sp per i legami σ e conserva due orbitali p non ibridati per i due contributi π.',
+    'HCN':'Il carbonio è sp: i due orbitali sp formano i legami σ C–H e C–N; i due p non ibridati partecipano ai due legami π del triplo legame.',
+    'BF₃':'Il boro è sp² e conserva un orbitale p non ibridato vuoto, perpendicolare al piano della molecola.',
+    'BCl₃':'Il boro è sp² e mantiene un orbitale p non ibridato vuoto, perpendicolare al piano molecolare.',
+    'SO₂':'Lo schema sp² descrive bene l’ossatura σ. La componente π è delocalizzata: l’animazione elettronica è una rappresentazione di valenza semplificata.',
+    'SO₃':'Lo schema sp² descrive l’ossatura σ planare. I legami π sono delocalizzati; una singola forma di Lewis è solo una forma limite.',
+    'NO₃⁻':'L’azoto è sp²; l’orbitale p non ibridato è perpendicolare al piano e partecipa al sistema π delocalizzato del nitrato.',
+    'CO₃²⁻':'Il carbonio è sp²; l’orbitale p non ibridato partecipa al sistema π delocalizzato dello ione carbonato.',
+    'NO₂⁻':'L’azoto è sp²; l’orbitale p non ibridato partecipa al sistema π delocalizzato del nitrito.',
+    'O₃':'L’ossigeno centrale è sp²; l’orbitale p non ibridato partecipa alla delocalizzazione π dell’ozono.'
+  };
+  if(special[r.formula])return special[r.formula];
+  if(h.pLeft===2)return `Restano due orbitali p non ibridati, mostrati come dumbbell ortogonali; possono partecipare a legami π.`;
+  if(h.pLeft===1)return `Resta un orbitale p non ibridato, perpendicolare al piano degli orbitali ${h.name}; può partecipare a un sistema π.`;
+  return `Gli orbitali ${h.name} descrivono l’orientamento dei domini σ e delle coppie solitarie dell’atomo centrale.`;
+}
+function updateHybridization(r){
+  const h=hybridizationFor(r);if(!h)return;
+  clearHybridTimers();
+  document.getElementById('hybBadge').textContent=h.name;
+  document.getElementById('hybTitle').textContent=`Ibridazione ${h.name} dell’atomo ${r.central}`;
+  document.getElementById('hybSummary').textContent=h.summary;
+  document.getElementById('hybMix').textContent=h.mix;
+  document.getElementById('hybCount').textContent=`${h.count} orbitali ${h.name}`;
+  document.getElementById('hybPleft').textContent=h.pLeft===0?'nessuno':`${h.pLeft} orbitale${h.pLeft>1?'i':''} p`;
+  document.getElementById('piInfo').textContent=piDescription(r,h);
+  document.getElementById('hybCaveat').innerHTML=(r.domains>=5)
+    ? '<strong>Nota sul modello:</strong> le sigle '+h.name+' sono utili nel modello scolastico VSEPR/ibridazione. Per le specie ipervalenti la descrizione quantomeccanica moderna non richiede una partecipazione significativa degli orbitali d; lo schema di promozione mostrato qui è quindi un modello storico-didattico.'
+    : '<strong>Interpretazione didattica:</strong> “promozione” e “ibridazione” sono passaggi del modello di legame di valenza, non una sequenza temporale osservabile dell’atomo durante la formazione della molecola.';
+  renderOrbitalBoxes(r,'hybrid');
+  drawHybridOrbitals(r);
+}
+function playHybridization(){
+  if(!model3d)return;
+  clearHybridTimers();
+  renderOrbitalBoxes(model3d,'ground');
+  hybAnimTimers.push(setTimeout(()=>renderOrbitalBoxes(model3d,'excited'),1500));
+  hybAnimTimers.push(setTimeout(()=>renderOrbitalBoxes(model3d,'hybrid'),3000));
+}
+document.getElementById('animateHybrid').addEventListener('click',playHybridization);
+document.getElementById('resetHybrid').addEventListener('click',()=>{clearHybridTimers();if(model3d)renderOrbitalBoxes(model3d,'hybrid');});
+document.getElementById('phaseGround').addEventListener('click',()=>{clearHybridTimers();if(model3d)renderOrbitalBoxes(model3d,'ground');});
+document.getElementById('phaseExcited').addEventListener('click',()=>{clearHybridTimers();if(model3d)renderOrbitalBoxes(model3d,'excited');});
+document.getElementById('phaseHybrid').addEventListener('click',()=>{clearHybridTimers();if(model3d)renderOrbitalBoxes(model3d,'hybrid');});
+
+const hybCanvas=document.getElementById('hybCanvas'),hybCtx=hybCanvas.getContext('2d');
+let hybRotX=-.45,hybRotY=.68,hybZoom=1,hybDragging=false,hybLastX=0,hybLastY=0;
+let hybAuto=false,hybRaf=null,hybLastFrame=0;
+
+function hybFit(){
+  const dpr=Math.min(window.devicePixelRatio||1,2),rect=hybCanvas.getBoundingClientRect();
+  const w=Math.max(300,Math.round(rect.width)),h=Math.max(300,Math.round(rect.height));
+  if(hybCanvas.width!==Math.round(w*dpr)||hybCanvas.height!==Math.round(h*dpr)){hybCanvas.width=Math.round(w*dpr);hybCanvas.height=Math.round(h*dpr);}
+  hybCtx.setTransform(dpr,0,0,dpr,0,0);return[w,h];
+}
+function hybridSet(r){
+  const lone=r.lone,arr=[];
+  if(r.domains===2){
+    [[1,0,0],[-1,0,0]].forEach(v=>arr.push({v,lone:false}));
+  }else if(r.domains===3){
+    const dirs=[[1,0,0],[-.5,.866,0],[-.5,-.866,0]];
+    dirs.forEach((v,i)=>arr.push({v,lone:i<lone}));
+  }else if(r.domains===4){
+    const dirs=[[1,1,1],[-1,-1,1],[-1,1,-1],[1,-1,-1]].map(norm3);
+    dirs.forEach((v,i)=>arr.push({v,lone:i<lone}));
+  }else if(r.domains===5){
+    const eq=[[1,0,0],[-.5,.866,0],[-.5,-.866,0]],ax=[[0,0,1],[0,0,-1]];
+    const dirs=[...eq,...ax];dirs.forEach((v,i)=>arr.push({v,lone:i<lone}));
+  }else if(r.domains===6){
+    const dirs=lone>=2?[[0,0,1],[0,0,-1],[1,0,0],[-1,0,0],[0,1,0],[0,-1,0]]
+                      :[[0,0,1],[1,0,0],[-1,0,0],[0,1,0],[0,-1,0],[0,0,-1]];
+    dirs.forEach((v,i)=>arr.push({v,lone:i<lone}));
+  }
+  return arr;
+}
+function pAxesFor(h){
+  if(h.name==='sp')return [[0,1,0],[0,0,1]];
+  if(h.name==='sp²')return [[0,0,1]];
+  return [];
+}
+function rotH(v){
+  let[x,y,z]=v;
+  const cy=Math.cos(hybRotY),sy=Math.sin(hybRotY),cx=Math.cos(hybRotX),sx=Math.sin(hybRotX);
+  const x1=x*cy+z*sy,z1=-x*sy+z*cy,y1=y*cx-z1*sx,z2=y*sx+z1*cx;
+  return[x1,y1,z2];
+}
+function projH(v,w,h,scale=1){
+  const[x,y,z]=rotH(v),sc=Math.min(w,h)*.29*hybZoom*scale,p=1/(1.20-z*.15);
+  return[w/2+x*sc*p,h/2-y*sc*p,z,p];
+}
+function rgba(hex,a){
+  const n=parseInt(hex.slice(1),16),r=(n>>16)&255,g=(n>>8)&255,b=n&255;
+  return`rgba(${r},${g},${b},${a})`;
+}
+function lobePath(cx,cy,tx,ty,width,small=false){
+  const dx=tx-cx,dy=ty-cy,L=Math.hypot(dx,dy)||1,ang=Math.atan2(dy,dx);
+  hybCtx.save();hybCtx.translate(cx,cy);hybCtx.rotate(ang);
+  const neck=small?Math.min(4,width*.16):Math.min(8,width*.22);
+  hybCtx.beginPath();hybCtx.moveTo(0,0);
+  if(!small){
+    hybCtx.bezierCurveTo(L*.12,-neck,L*.30,-width*.72,L*.60,-width);
+    hybCtx.bezierCurveTo(L*.82,-width*.86,L*1.02,-width*.40,L,0);
+    hybCtx.bezierCurveTo(L*1.02,width*.40,L*.82,width*.86,L*.60,width);
+    hybCtx.bezierCurveTo(L*.30,width*.72,L*.12,neck,0,0);
+  }else{
+    hybCtx.bezierCurveTo(L*.18,-neck,L*.46,-width*.75,L*.72,-width*.62);
+    hybCtx.bezierCurveTo(L*.94,-width*.45,L*1.02,-width*.18,L,0);
+    hybCtx.bezierCurveTo(L*1.02,width*.18,L*.94,width*.45,L*.72,width*.62);
+    hybCtx.bezierCurveTo(L*.46,width*.75,L*.18,neck,0,0);
+  }
+  hybCtx.closePath();hybCtx.restore();
+}
+function drawVolumetricLobe(cx,cy,tx,ty,width,color,alpha=1,small=false){
+  const dx=tx-cx,dy=ty-cy,L=Math.hypot(dx,dy)||1,ang=Math.atan2(dy,dx);
+  hybCtx.save();hybCtx.translate(cx,cy);hybCtx.rotate(ang);
+  const neck=small?Math.min(4,width*.16):Math.min(8,width*.22);
+  const path=new Path2D();path.moveTo(0,0);
+  if(!small){
+    path.bezierCurveTo(L*.12,-neck,L*.30,-width*.72,L*.60,-width);
+    path.bezierCurveTo(L*.82,-width*.86,L*1.02,-width*.40,L,0);
+    path.bezierCurveTo(L*1.02,width*.40,L*.82,width*.86,L*.60,width);
+    path.bezierCurveTo(L*.30,width*.72,L*.12,neck,0,0);
+  }else{
+    path.bezierCurveTo(L*.18,-neck,L*.46,-width*.75,L*.72,-width*.62);
+    path.bezierCurveTo(L*.94,-width*.45,L*1.02,-width*.18,L,0);
+    path.bezierCurveTo(L*1.02,width*.18,L*.94,width*.45,L*.72,width*.62);
+    path.bezierCurveTo(L*.46,width*.75,L*.18,neck,0,0);
+  }
+  path.closePath();
+  const grad=hybCtx.createLinearGradient(0,-width,L,width*.30);
+  grad.addColorStop(0,rgba(color,.25*alpha));
+  grad.addColorStop(.22,rgba(color,.64*alpha));
+  grad.addColorStop(.52,rgba(color,.96*alpha));
+  grad.addColorStop(.78,rgba(color,.80*alpha));
+  grad.addColorStop(1,rgba(color,.50*alpha));
+  hybCtx.fillStyle=grad;hybCtx.shadowColor='rgba(31,42,64,.19)';hybCtx.shadowBlur=8;hybCtx.fill(path);
+  hybCtx.shadowColor='transparent';hybCtx.strokeStyle='rgba(255,255,255,.58)';hybCtx.lineWidth=1.2;hybCtx.stroke(path);
+  // highlight gives a rounded, 3D-looking surface
+  hybCtx.globalAlpha=.36*alpha;hybCtx.strokeStyle='#fff';hybCtx.lineWidth=Math.max(2,width*.10);
+  hybCtx.beginPath();hybCtx.moveTo(L*.20,-width*.25);hybCtx.bezierCurveTo(L*.43,-width*.65,L*.72,-width*.56,L*.88,-width*.22);hybCtx.stroke();
+  hybCtx.restore();
+}
+function drawHybridOrbital(center,dir,w,h,isLone){
+  const end=projH([dir[0]*.92,dir[1]*.92,dir[2]*.92],w,h);
+  const opp=projH([-dir[0]*.30,-dir[1]*.30,-dir[2]*.30],w,h);
+  const rotated=rotH(dir),depth=end[2];
+  const foreshorten=Math.sqrt(Math.max(.20,1-rotated[2]*rotated[2]));
+  const width=(29+5*end[3])*(.55+.45*foreshorten);
+  const alpha=depth<0?.48:.92;
+  drawVolumetricLobe(center[0],center[1],opp[0],opp[1],width*.52,'#d48aa5',depth<0?.38:.72,true);
+  drawVolumetricLobe(center[0],center[1],end[0],end[1],width,isLone?'#d7a044':'#4f73d5',alpha,false);
+  if(isLone){
+    const vx=end[0]-center[0],vy=end[1]-center[1],L=Math.hypot(vx,vy)||1,ux=vx/L,uy=vy/L,px=-uy,py=ux;
+    const ex=center[0]+ux*L*.66,ey=center[1]+uy*L*.66;
+    hybCtx.fillStyle='#6d4a0d';hybCtx.strokeStyle='#fff';hybCtx.lineWidth=1.2;
+    [-1,1].forEach(s=>{hybCtx.beginPath();hybCtx.arc(ex+px*6*s,ey+py*6*s,4.7,0,Math.PI*2);hybCtx.fill();hybCtx.stroke();});
+  }
+  return end;
+}
+function drawPOrbital(center,axis,w,h,index){
+  const A=projH([axis[0]*.78,axis[1]*.78,axis[2]*.78],w,h),B=projH([-axis[0]*.78,-axis[1]*.78,-axis[2]*.78],w,h);
+  const rz=rotH(axis),foreshorten=Math.sqrt(Math.max(.16,1-rz[2]*rz[2])),width=23*(.55+.45*foreshorten);
+  drawVolumetricLobe(center[0],center[1],A[0],A[1],width,'#806bb6',.38,false);
+  drawVolumetricLobe(center[0],center[1],B[0],B[1],width,'#9c86ca',.38,false);
+  const lx=(A[0]+B[0])/2,ly=Math.min(A[1],B[1])-8;
+  hybCtx.fillStyle='#716099';hybCtx.font='600 10px system-ui';hybCtx.textAlign='center';hybCtx.fillText(`p${index+1}`,lx,ly);
+}
+function drawBondedAtomAt(dir,label,w,h){
+  const p=projH([dir[0]*1.23,dir[1]*1.23,dir[2]*1.23],w,h);
+  const rr=(12+4*p[3])*hybZoom;
+  const color=atomColor(label);
+  const g=hybCtx.createRadialGradient(p[0]-rr*.3,p[1]-rr*.35,1,p[0],p[1],rr);
+  g.addColorStop(0,'#fff');g.addColorStop(.22,color);g.addColorStop(1,'#273142');
+  hybCtx.fillStyle=g;hybCtx.beginPath();hybCtx.arc(p[0],p[1],rr,0,Math.PI*2);hybCtx.fill();
+  hybCtx.strokeStyle='rgba(255,255,255,.8)';hybCtx.lineWidth=1.5;hybCtx.stroke();
+  hybCtx.fillStyle=label==='H'?'#344054':'#fff';hybCtx.font=`800 ${Math.max(10,rr*.72)}px system-ui`;hybCtx.textAlign='center';hybCtx.textBaseline='middle';hybCtx.fillText(label,p[0],p[1]);
+  return p;
+}
+function drawHybridOrbitals(r){
+  const[w,h]=hybFit();hybCtx.clearRect(0,0,w,h);
+  const center=[w/2,h/2],hinfo=hybridizationFor(r),set=hybridSet(r),labels=ligandLabels(r.formula,r.central);
+  const bondItems=set.filter(x=>!x.lone);
+  let li=0;bondItems.forEach(x=>x.label=labels[li++]||'X');
+
+  // gentle spatial guides
+  hybCtx.save();hybCtx.strokeStyle='rgba(90,105,140,.10)';hybCtx.setLineDash([4,6]);
+  hybCtx.beginPath();hybCtx.ellipse(w/2,h/2,Math.min(w,h)*.26*hybZoom,Math.min(w,h)*.08*hybZoom,0,0,Math.PI*2);hybCtx.stroke();hybCtx.restore();
+
+  // p orbitals are behind the hybrid set
+  pAxesFor(hinfo).forEach((axis,i)=>drawPOrbital(center,axis,w,h,i));
+
+  const sorted=set.map(o=>({...o,p:projH(o.v,w,h)})).sort((a,b)=>a.p[2]-b.p[2]);
+  // back lobes
+  sorted.filter(o=>o.p[2]<0).forEach(o=>drawHybridOrbital(center,o.v,w,h,o.lone));
+  // back atoms
+  sorted.filter(o=>!o.lone&&o.p[2]<0).forEach(o=>drawBondedAtomAt(o.v,o.label,w,h));
+
+  // central atom
+  const cr=24;
+  const g=hybCtx.createRadialGradient(w/2-7,h/2-7,2,w/2,h/2,cr);
+  g.addColorStop(0,'#fafcff');g.addColorStop(.30,'#7d8797');g.addColorStop(.72,'#3a4658');g.addColorStop(1,'#202a38');
+  hybCtx.fillStyle=g;hybCtx.beginPath();hybCtx.arc(w/2,h/2,cr,0,Math.PI*2);hybCtx.fill();
+  hybCtx.strokeStyle='rgba(255,255,255,.9)';hybCtx.lineWidth=2;hybCtx.stroke();
+
+  // front lobes and atoms
+  sorted.filter(o=>o.p[2]>=0).forEach(o=>drawHybridOrbital(center,o.v,w,h,o.lone));
+  sorted.filter(o=>!o.lone&&o.p[2]>=0).forEach(o=>drawBondedAtomAt(o.v,o.label,w,h));
+
+  hybCtx.fillStyle='#fff';hybCtx.font='800 15px system-ui';hybCtx.textAlign='center';hybCtx.textBaseline='middle';hybCtx.shadowColor='rgba(0,0,0,.65)';hybCtx.shadowBlur=3;hybCtx.fillText(r.central,w/2,h/2);hybCtx.shadowColor='transparent';
+
+  hybCtx.fillStyle='#566174';hybCtx.font='600 13px system-ui';hybCtx.textAlign='left';hybCtx.textBaseline='alphabetic';
+  hybCtx.fillText(`${r.formula} • ${hinfo.name} • trascina per ruotare`,14,h-16);
+}
+function stopHybAuto(){if(hybRaf){cancelAnimationFrame(hybRaf);hybRaf=null;}}
+function hybAutoFrame(ts){
+  if(!hybAuto||!model3d){hybRaf=null;return;}
+  if(!hybLastFrame)hybLastFrame=ts;const dt=Math.min(40,ts-hybLastFrame);hybLastFrame=ts;
+  hybRotY+=dt*.00036;drawHybridOrbitals(model3d);hybRaf=requestAnimationFrame(hybAutoFrame);
+}
+function setHybAuto(v){
+  hybAuto=v;document.getElementById('hybAutoRotate').checked=v;hybLastFrame=0;stopHybAuto();
+  if(v)hybRaf=requestAnimationFrame(hybAutoFrame);
+}
+function setHybView(x,y){setHybAuto(false);hybRotX=x;hybRotY=y;if(model3d)drawHybridOrbitals(model3d);}
+hybCanvas.addEventListener('pointerdown',e=>{hybDragging=true;setHybAuto(false);hybLastX=e.clientX;hybLastY=e.clientY;hybCanvas.setPointerCapture(e.pointerId);});
+hybCanvas.addEventListener('pointermove',e=>{if(!hybDragging)return;hybRotY+=(e.clientX-hybLastX)*.0105;hybRotX+=(e.clientY-hybLastY)*.0105;hybRotX=Math.max(-1.55,Math.min(1.55,hybRotX));hybLastX=e.clientX;hybLastY=e.clientY;if(model3d)drawHybridOrbitals(model3d);});
+hybCanvas.addEventListener('pointerup',e=>{hybDragging=false;try{hybCanvas.releasePointerCapture(e.pointerId)}catch(_){}});hybCanvas.addEventListener('pointercancel',()=>hybDragging=false);
+hybCanvas.addEventListener('wheel',e=>{e.preventDefault();hybZoom=Math.max(.72,Math.min(1.42,hybZoom+(e.deltaY<0?.055:-.055)));if(model3d)drawHybridOrbitals(model3d);},{passive:false});
+document.getElementById('hybIso').addEventListener('click',()=>setHybView(-.45,.68));
+document.getElementById('hybFront').addEventListener('click',()=>setHybView(0,0));
+document.getElementById('hybTop').addEventListener('click',()=>setHybView(-Math.PI/2+.03,0));
+document.getElementById('hybSync').addEventListener('click',()=>{setHybAuto(false);hybRotX=rotX;hybRotY=rotY;if(model3d)drawHybridOrbitals(model3d);});
+document.getElementById('hybResetView').addEventListener('click',()=>{hybZoom=1;setHybView(-.45,.68);});
+document.getElementById('hybAutoRotate').addEventListener('change',e=>setHybAuto(e.target.checked));
+window.addEventListener('resize',()=>{if(model3d)drawHybridOrbitals(model3d);});
+
+
+const RESONANCE_DATA={
+  'O₃':{n:2,doubles:1,count:2,bondOrder:1.5,totalCharge:0,centerCharge:'+1',singleCharge:'−1',outerDelta:'−½',summary:'Le due forme limite equivalenti differiscono per la posizione del doppio legame e della carica negativa.',note:'Nell’ozono i due legami O–O risultano equivalenti, con ordine di legame medio 1,5. La carica negativa è distribuita sui due ossigeni terminali, mentre l’ossigeno centrale conserva carattere positivo.'},
+  'SO₂':{n:2,doubles:1,count:2,bondOrder:1.5,totalCharge:0,centerCharge:'+1',singleCharge:'−1',outerDelta:'−½',summary:'Nel modello di Lewis a ottetto, due forme limite equivalenti descrivono la delocalizzazione tra i due legami S–O.',note:'Per SO₂ questa è una rappresentazione didattica utile della delocalizzazione. La descrizione quantomeccanica reale del legame è più ricca di una semplice alternanza singolo/doppio.'},
+  'NO₂⁻':{n:2,doubles:1,count:2,bondOrder:1.5,totalCharge:-1,centerCharge:'',singleCharge:'−1',outerDelta:'−½',summary:'Il doppio legame N=O può essere posto su ciascuno dei due ossigeni: le due forme sono equivalenti.',note:'I due legami N–O hanno la stessa lunghezza sperimentale e un ordine di legame medio pari a 1,5; la carica −1 è delocalizzata sui due ossigeni.'},
+  'NO₃⁻':{n:3,doubles:1,count:3,bondOrder:4/3,totalCharge:-1,centerCharge:'+1',singleCharge:'−1',outerDelta:'−⅔',summary:'Tre forme limite equivalenti: il doppio legame N=O occupa, a turno, ciascuna delle tre direzioni.',note:'Nell’ibrido nitrato i tre legami N–O sono equivalenti, con ordine medio 4/3. La carica negativa è distribuita sui tre ossigeni.'},
+  'CO₃²⁻':{n:3,doubles:1,count:3,bondOrder:4/3,totalCharge:-2,centerCharge:'',singleCharge:'−1',outerDelta:'−⅔',summary:'Tre forme limite equivalenti descrivono la delocalizzazione del sistema π sul gruppo carbonato.',note:'I tre legami C–O sono equivalenti nell’ibrido e hanno ordine medio 4/3. La carica complessiva −2 è delocalizzata sui tre ossigeni.'},
+  'SO₃':{n:3,doubles:1,count:3,bondOrder:4/3,totalCharge:0,centerCharge:'+2',singleCharge:'−1',outerDelta:'−⅔',summary:'Nel modello a ottetto si possono scrivere tre forme limite equivalenti con un legame S=O e due legami S–O.',note:'Per SO₃ sono possibili anche rappresentazioni di Lewis con ottetto espanso. Qui la risonanza è mostrata come modello didattico della delocalizzazione e dell’equivalenza dei tre legami S–O.'},
+  'SO₄²⁻':{n:4,doubles:2,count:6,bondOrder:1.5,totalCharge:-2,centerCharge:'',singleCharge:'−1',outerDelta:'−½',summary:'Nel modello scolastico più comune, sei forme equivalenti derivano dalla scelta di due legami S=O tra le quattro direzioni S–O.',note:'Nell’ibrido solfato i quattro legami S–O sono equivalenti. La rappresentazione con due doppi legami è un modello di Lewis; la descrizione moderna considera la densità elettronica delocalizzata senza richiedere doppi legami localizzati permanenti.'}
+};
+let resTimer=null,resIndex=0,resCurrent=null,resDensityRaf=null;
+let resRotX=-.55,resRotY=.48,resZoom=1,resDragging=false,resLastX=0,resLastY=0,resDensityTime=0;
+
+function combinations(n,k){const out=[];function rec(start,a){if(a.length===k){out.push(a.slice());return;}for(let i=start;i<n;i++){a.push(i);rec(i+1,a);a.pop();}}rec(0,[]);return out;}
+function resPos(n,cx,cy,r){if(n===2)return[[cx-r*.5,cy-r*.866],[cx-r*.5,cy+r*.866]];const arr=[];const start=n===4?-45:0;for(let i=0;i<n;i++){const a=(start+i*2*Math.PI/n);arr.push([cx+r*Math.cos(a),cy+r*Math.sin(a)]);}return arr;}
+function svgAtom(x,y,label,charge=''){return `<circle cx="${x}" cy="${y}" r="17" fill="#fff" stroke="#65708a" stroke-width="2"/><text x="${x}" y="${y+5}" text-anchor="middle" font-size="14" font-weight="800" fill="#344054">${label}</text>${charge?`<text x="${x+17}" y="${y-14}" font-size="12" font-weight="800" fill="#9a650d">${charge}</text>`:''}`;}
+function svgBond(cx,cy,x,y,double){const dx=x-cx,dy=y-cy,L=Math.hypot(dx,dy)||1,px=-dy/L*4,py=dx/L*4;const line=(ox,oy)=>`<line x1="${cx+ox}" y1="${cy+oy}" x2="${x+ox}" y2="${y+oy}" stroke="#65708a" stroke-width="3" stroke-linecap="round"/>`;return double?line(px,py)+line(-px,-py):line(0,0);}
+function resonanceFormSVG(r,d,doubleSet){const w=190,h=140,cx=w/2,cy=h/2,pos=resPos(d.n,cx,cy,48),outer='O';let s=`<svg viewBox="0 0 ${w} ${h}" aria-label="Forma limite di risonanza">`;pos.forEach((p,i)=>{s+=svgBond(cx,cy,p[0],p[1],doubleSet.includes(i));});s+=svgAtom(cx,cy,r.central,d.centerCharge);pos.forEach((p,i)=>{const q=doubleSet.includes(i)?'':d.singleCharge;s+=svgAtom(p[0],p[1],outer,q);});s+='</svg>';return s;}
+function renderResForms(r,d){const sets=combinations(d.n,d.doubles),box=document.getElementById('resForms');box.innerHTML='';sets.forEach((set,i)=>{if(i){const ar=document.createElement('div');ar.className='resArrow';ar.textContent='↔';box.appendChild(ar);}const div=document.createElement('div');div.className='resForm'+(i===resIndex?' active':'');div.dataset.index=i;div.innerHTML=`<div class="resFormTitle">Forma limite ${i+1}</div>${resonanceFormSVG(r,d,set)}`;div.addEventListener('click',()=>{resIndex=i;highlightResForm();});box.appendChild(div);});}
+function highlightResForm(){document.querySelectorAll('#resForms .resForm').forEach(el=>el.classList.toggle('active',Number(el.dataset.index)===resIndex));}
+
+function stopResForms(){if(resTimer){clearInterval(resTimer);resTimer=null;}}
+function stopResDensity(){if(resDensityRaf){cancelAnimationFrame(resDensityRaf);resDensityRaf=null;}}
+function stopResAnimation(){stopResForms();stopResDensity();}
+
+function updateResonance(r){
+  const d=RESONANCE_DATA[r.formula],card=document.getElementById('resonanceCard');
+  stopResAnimation();
+  if(!d){card.classList.add('hidden');resCurrent=null;return;}
+  resCurrent={r,d};resIndex=0;card.classList.remove('hidden');
+  document.getElementById('resTitle').textContent=`${r.formula}: forme limite e ibrido di risonanza`;
+  document.getElementById('resSummary').textContent=d.summary;
+  document.getElementById('resCount').textContent=d.count;
+  document.getElementById('resBondOrder').textContent=d.bondOrder===4/3?'≈ 1,33':String(d.bondOrder).replace('.',',');
+  document.getElementById('resChargeText').textContent=d.totalCharge===0?`distribuzione parziale (${d.outerDelta} sui terminali)`: `${d.totalCharge<0?'−':'+'}${Math.abs(d.totalCharge)} complessiva`;
+  document.getElementById('resNote').textContent=d.note;
+  document.getElementById('resPiExplain').textContent=d.n===4
+    ? 'Per SO₄²⁻ non viene mostrata una falsa nube π planare: la trasparenza viola indica invece il carattere π distribuito sui quattro legami S–O della geometria tetraedrica.'
+    : 'I due colori distinguono le due fasi della combinazione π sopra e sotto il piano molecolare. La nube è continua su più atomi: non esiste un doppio legame localizzato che “salta” da un legame all’altro.';
+  renderResForms(r,d);drawResHybrid(r,d,0);
+  if(document.getElementById('resAnimateDensity').checked && !matchMedia('(prefers-reduced-motion: reduce)').matches){
+    resDensityRaf=requestAnimationFrame(animateResDensity);
+  }
+}
+
+function fitResCanvas(){
+  const c=document.getElementById('resCanvas'),ctx=c.getContext('2d'),dpr=Math.min(devicePixelRatio||1,2),rect=c.getBoundingClientRect(),w=Math.max(300,Math.round(rect.width)),h=Math.max(280,Math.round(rect.height));
+  if(c.width!==Math.round(w*dpr)||c.height!==Math.round(h*dpr)){c.width=Math.round(w*dpr);c.height=Math.round(h*dpr);}
+  ctx.setTransform(dpr,0,0,dpr,0,0);return[c,ctx,w,h];
+}
+function normRes(v){const L=Math.hypot(v[0],v[1],v[2])||1;return[v[0]/L,v[1]/L,v[2]/L];}
+function resVectors(d){
+  if(d.n===2)return[[.5,.866,0],[.5,-.866,0]];
+  if(d.n===3)return[[1,0,0],[-.5,.866,0],[-.5,-.866,0]];
+  return[[1,1,1],[-1,-1,1],[-1,1,-1],[1,-1,-1]].map(normRes);
+}
+function resRotate(v){
+  let[x,y,z]=v;
+  const cy=Math.cos(resRotY),sy=Math.sin(resRotY),cx=Math.cos(resRotX),sx=Math.sin(resRotX);
+  const x1=x*cy+z*sy,z1=-x*sy+z*cy,y1=y*cx-z1*sx,z2=y*sx+z1*cx;
+  return[x1,y1,z2];
+}
+function resProject(v,w,h,scale=1){
+  const[x,y,z]=resRotate(v),sc=Math.min(w,h)*.265*resZoom*scale,p=1/(1.22-z*.16);
+  return[w/2+x*sc*p,h/2-y*sc*p,z,p];
+}
+function drawResAtom(ctx,p,label,charge,central=false){
+  const rr=(central?24:20)*Math.max(.82,Math.min(1.18,p[3])),g=ctx.createRadialGradient(p[0]-rr*.35,p[1]-rr*.38,2,p[0],p[1],rr);
+  g.addColorStop(0,'#fff');g.addColorStop(.28,central?'#8c96a7':'#eef2f9');g.addColorStop(1,central?'#2b3748':'#7d8eae');
+  ctx.fillStyle=g;ctx.beginPath();ctx.arc(p[0],p[1],rr,0,Math.PI*2);ctx.fill();ctx.strokeStyle='rgba(255,255,255,.9)';ctx.lineWidth=2;ctx.stroke();
+  ctx.fillStyle='#fff';ctx.font=`800 ${central?16:14}px system-ui`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(label,p[0],p[1]);
+  if(charge){ctx.fillStyle='#8d6316';ctx.font='800 12px system-ui';ctx.fillText(charge,p[0]+rr*.9,p[1]-rr*.85);}
+}
+function drawResBond(ctx,a,b){
+  ctx.save();ctx.strokeStyle='#778193';ctx.lineWidth=7;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(a[0],a[1]);ctx.lineTo(b[0],b[1]);ctx.stroke();
+  ctx.strokeStyle='rgba(255,255,255,.42)';ctx.lineWidth=1.7;ctx.beginPath();ctx.moveTo(a[0],a[1]-1);ctx.lineTo(b[0],b[1]-1);ctx.stroke();ctx.restore();
+}
+function drawCloudSegment(ctx,a,b,color,alpha,width){
+  ctx.save();ctx.lineCap='round';ctx.strokeStyle=color;ctx.globalAlpha=alpha;ctx.lineWidth=width;
+  ctx.shadowColor=color;ctx.shadowBlur=18;ctx.beginPath();ctx.moveTo(a[0],a[1]);ctx.lineTo(b[0],b[1]);ctx.stroke();ctx.restore();
+}
+function drawCloudBlob(ctx,p,color,alpha,rx,ry){
+  ctx.save();ctx.globalAlpha=alpha;ctx.shadowColor=color;ctx.shadowBlur=16;
+  const g=ctx.createRadialGradient(p[0]-rx*.2,p[1]-ry*.25,2,p[0],p[1],Math.max(rx,ry));
+  g.addColorStop(0,'rgba(255,255,255,.56)');g.addColorStop(.2,color);g.addColorStop(1,'rgba(255,255,255,0)');
+  ctx.fillStyle=g;ctx.beginPath();ctx.ellipse(p[0],p[1],rx,ry,0,0,Math.PI*2);ctx.fill();ctx.restore();
+}
+function drawPAtAtom(ctx,base,w,h,alpha=1){
+  const z=.52,top=resProject([base[0],base[1],z],w,h),bot=resProject([base[0],base[1],-z],w,h),mid=resProject(base,w,h);
+  const draw=(q,color)=>{
+    const dx=q[0]-mid[0],dy=q[1]-mid[1],L=Math.hypot(dx,dy)||1,ang=Math.atan2(dy,dx);
+    ctx.save();ctx.translate(mid[0],mid[1]);ctx.rotate(ang);ctx.globalAlpha=.48*alpha;
+    const grad=ctx.createLinearGradient(0,0,L,0);grad.addColorStop(0,'rgba(255,255,255,.2)');grad.addColorStop(.45,color);grad.addColorStop(1,'rgba(255,255,255,.12)');
+    ctx.fillStyle=grad;ctx.beginPath();ctx.moveTo(0,0);ctx.bezierCurveTo(L*.25,-13,L*.78,-17,L,0);ctx.bezierCurveTo(L*.78,17,L*.25,13,0,0);ctx.fill();ctx.restore();
+  };
+  draw(top,'#5876cf');draw(bot,'#c8799b');
+}
+function drawPlanarPi(ctx,w,h,r,d,time){
+  const vecs=resVectors(d),atoms=[[0,0,0],...vecs],z=.34;
+  const top=atoms.map(v=>resProject([v[0],v[1],z],w,h));
+  const bot=atoms.map(v=>resProject([v[0],v[1],-z],w,h));
+  const pulse=.90+.08*Math.sin(time*.0032),topColor='rgba(70,101,205,.56)',botColor='rgba(205,103,146,.52)';
+  const lineW=Math.max(34,Math.min(w,h)*.105)*pulse;
+  for(let i=1;i<top.length;i++){drawCloudSegment(ctx,top[0],top[i],topColor,.34*pulse,lineW);drawCloudSegment(ctx,bot[0],bot[i],botColor,.32*pulse,lineW);}
+  top.forEach(p=>drawCloudBlob(ctx,p,'rgba(73,104,207,.56)',.30*pulse,lineW*.72,lineW*.48));
+  bot.forEach(p=>drawCloudBlob(ctx,p,'rgba(210,110,151,.54)',.28*pulse,lineW*.72,lineW*.48));
+  if(document.getElementById('resShowP').checked)atoms.forEach(v=>drawPAtAtom(ctx,v,w,h,.88));
+}
+function drawTetraPi(ctx,w,h,d,time){
+  const vecs=resVectors(d),center=resProject([0,0,0],w,h),pulse=.90+.08*Math.sin(time*.0032);
+  vecs.forEach(v=>{
+    const end=resProject(v,w,h),col='rgba(116,86,178,.48)';
+    drawCloudSegment(ctx,center,end,col,.30*pulse,26*pulse);
+    drawCloudBlob(ctx,end,'rgba(126,94,190,.48)',.22*pulse,28,18);
+  });
+}
+function drawMolecularPlane(ctx,w,h,d){
+  if(d.n===4)return;
+  const vecs=resVectors(d),pts=vecs.map(v=>resProject([v[0]*1.18,v[1]*1.18,0],w,h));
+  ctx.save();ctx.fillStyle='rgba(98,112,145,.045)';ctx.strokeStyle='rgba(98,112,145,.14)';ctx.lineWidth=1;ctx.setLineDash([4,5]);
+  ctx.beginPath();
+  if(d.n===2){
+    const c=resProject([0,0,0],w,h);ctx.moveTo(pts[0][0],pts[0][1]);ctx.lineTo(c[0],c[1]);ctx.lineTo(pts[1][0],pts[1][1]);
+  }else{ctx.moveTo(pts[0][0],pts[0][1]);for(let i=1;i<pts.length;i++)ctx.lineTo(pts[i][0],pts[i][1]);ctx.closePath();ctx.fill();}
+  ctx.stroke();ctx.restore();
+}
+function drawResHybrid(r,d,time=0){
+  const[c,ctx,w,h]=fitResCanvas();ctx.clearRect(0,0,w,h);
+  const vecs=resVectors(d),center=resProject([0,0,0],w,h),items=vecs.map((v,i)=>({v,i,p:resProject(v,w,h)})).sort((a,b)=>a.p[2]-b.p[2]);
+  drawMolecularPlane(ctx,w,h,d);
+  if(d.n===4)drawTetraPi(ctx,w,h,d,time);else drawPlanarPi(ctx,w,h,r,d,time);
+  items.filter(o=>o.p[2]<0).forEach(o=>drawResBond(ctx,center,o.p));
+  items.filter(o=>o.p[2]<0).forEach(o=>drawResAtom(ctx,o.p,'O',d.outerDelta,false));
+  drawResAtom(ctx,center,r.central,d.centerCharge,true);
+  items.filter(o=>o.p[2]>=0).forEach(o=>drawResBond(ctx,center,o.p));
+  items.filter(o=>o.p[2]>=0).forEach(o=>drawResAtom(ctx,o.p,'O',d.outerDelta,false));
+  ctx.fillStyle='#566174';ctx.font='600 13px system-ui';ctx.textAlign='left';ctx.textBaseline='alphabetic';
+  const bo=d.bondOrder===4/3?'1,33':String(d.bondOrder).replace('.',',');
+  ctx.fillText(d.n===4?`Ibrido reale • carattere π distribuito • ordine medio ${bo}`:`Ibrido reale • nube π continua • ordine medio ${bo}`,14,h-16);
+}
+function animateResDensity(ts){
+  if(!resCurrent||!document.getElementById('resAnimateDensity').checked){resDensityRaf=null;return;}
+  resDensityTime=ts;drawResHybrid(resCurrent.r,resCurrent.d,ts);resDensityRaf=requestAnimationFrame(animateResDensity);
+}
+function ensureResDensity(){
+  stopResDensity();
+  if(resCurrent&&document.getElementById('resAnimateDensity').checked&&!matchMedia('(prefers-reduced-motion: reduce)').matches)resDensityRaf=requestAnimationFrame(animateResDensity);
+  else if(resCurrent)drawResHybrid(resCurrent.r,resCurrent.d,0);
+}
+function animateResForms(){
+  if(!resCurrent)return;stopResForms();const forms=combinations(resCurrent.d.n,resCurrent.d.doubles);
+  resTimer=setInterval(()=>{resIndex=(resIndex+1)%forms.length;highlightResForm();const active=document.querySelector('#resForms .resForm.active');if(active)active.scrollIntoView({behavior:'smooth',inline:'center',block:'nearest'});},900);
+}
+document.getElementById('resAnimate').addEventListener('click',animateResForms);
+document.getElementById('resStop').addEventListener('click',stopResForms);
+document.getElementById('resShowP').addEventListener('change',()=>{if(resCurrent)drawResHybrid(resCurrent.r,resCurrent.d,resDensityTime);});
+document.getElementById('resAnimateDensity').addEventListener('change',ensureResDensity);
+function setResView(x,y){resRotX=x;resRotY=y;if(resCurrent)drawResHybrid(resCurrent.r,resCurrent.d,resDensityTime);}
+document.getElementById('resIso').addEventListener('click',()=>setResView(-.55,.48));
+document.getElementById('resPlane').addEventListener('click',()=>setResView(0,0));
+document.getElementById('resSide').addEventListener('click',()=>setResView(-1.18,0));
+const resCanvas=document.getElementById('resCanvas');
+resCanvas.addEventListener('pointerdown',e=>{resDragging=true;resLastX=e.clientX;resLastY=e.clientY;resCanvas.setPointerCapture(e.pointerId);});
+resCanvas.addEventListener('pointermove',e=>{if(!resDragging)return;resRotY+=(e.clientX-resLastX)*.0105;resRotX+=(e.clientY-resLastY)*.0105;resRotX=Math.max(-1.55,Math.min(1.55,resRotX));resLastX=e.clientX;resLastY=e.clientY;if(resCurrent)drawResHybrid(resCurrent.r,resCurrent.d,resDensityTime);});
+resCanvas.addEventListener('pointerup',e=>{resDragging=false;try{resCanvas.releasePointerCapture(e.pointerId)}catch(_){}});resCanvas.addEventListener('pointercancel',()=>resDragging=false);
+resCanvas.addEventListener('wheel',e=>{e.preventDefault();resZoom=Math.max(.72,Math.min(1.42,resZoom+(e.deltaY<0?.055:-.055)));if(resCurrent)drawResHybrid(resCurrent.r,resCurrent.d,resDensityTime);},{passive:false});
+window.addEventListener('resize',()=>{if(resCurrent)drawResHybrid(resCurrent.r,resCurrent.d,resDensityTime);});
+function analyze(){const val=document.getElementById('formula').value;const r=DATA.find(x=>sameFormula(x.formula,val));const msg=document.getElementById('exploreMsg');if(!r){msg.textContent='Specie non presente nell’archivio. Prova un’altra formula.';document.getElementById('answer').classList.add('hidden');return;}msg.textContent='';document.getElementById('answer').classList.remove('hidden');[['aFormula','formula'],['aAxe','axe'],['aElectron','electron'],['aMolecular','molecular'],['aAngles','angles'],['aPolarity','polarity'],['aNote','note']].forEach(([id,k])=>document.getElementById(id).textContent=r[k]);document.getElementById('aCentral').textContent='Atomo centrale: '+r.central;document.getElementById('aDomains').textContent=r.domains;document.getElementById('aLone').textContent=r.lone;draw3D(r);updateHybridization(r);updateResonance(r);}
+
+const eg=[...new Set(DATA.map(x=>x.electron))].sort();const mg=[...new Set(DATA.map(x=>x.molecular))].sort();
+for(const [id,arr] of [['qElectron',eg],['qMolecular',mg]]){const s=document.getElementById(id);s.innerHTML='<option value="">— scegli —</option>'+arr.map(x=>`<option>${x}</option>`).join('');}
+document.getElementById('qHybrid').innerHTML='<option value="">— scegli —</option>'+['sp','sp²','sp³','sp³d','sp³d²'].map(x=>`<option>${x}</option>`).join('');
+let current=null;
+function newQ(){current=DATA[Math.floor(Math.random()*DATA.length)];document.getElementById('qFormula').textContent=current.formula;document.getElementById('qAxe').value='';document.getElementById('qElectron').value='';document.getElementById('qMolecular').value='';document.getElementById('qHybrid').value='';document.getElementById('qStatus').textContent='';document.getElementById('qStatus').className='status';document.getElementById('solution').classList.add('hidden');}
+document.getElementById('next').addEventListener('click',newQ);
+document.getElementById('check').addEventListener('click',()=>{const a=norm(document.getElementById('qAxe').value), b=norm(current.axe);const e=document.getElementById('qElectron').value===current.electron;const m=document.getElementById('qMolecular').value===current.molecular;const h=document.getElementById('qHybrid').value===(HYB_INFO[current.domains]||{}).name;const ok=a===b&&e&&m&&h;const st=document.getElementById('qStatus');st.textContent=ok?'Corretto!':'Controlla la soluzione e riprova con una nuova specie.';st.className='status '+(ok?'ok':'no');document.getElementById('solution').classList.remove('hidden');const hi=(HYB_INFO[current.domains]||{}).name||'—';document.getElementById('solText').innerHTML=`<strong>${current.formula}</strong>: ${current.axe} • ibridazione <strong>${hi}</strong> • geometria elettronica <strong>${current.electron}</strong> • geometria molecolare <strong>${current.molecular}</strong> • angoli ${current.angles}.<br>${current.note}`;});newQ();
+document.getElementById('formula').value='NH₃'; analyze();
+
+const fg=document.getElementById('filterGeom'); mg.forEach(x=>fg.insertAdjacentHTML('beforeend',`<option>${x}</option>`));fg.addEventListener('change',render);document.getElementById('searchArchive').addEventListener('input',render);
+function render(){const f=fg.value;const q=document.getElementById('searchArchive').value.toLowerCase();const rows=DATA.filter(r=>(!f||r.molecular===f)&&(!q||Object.values(r).join(' ').toLowerCase().includes(q)));document.getElementById('tbody').innerHTML=rows.map(r=>`<tr><td><strong>${r.formula}</strong></td><td>${r.axe}</td><td>${(HYB_INFO[r.domains]||{}).name||'—'}</td><td>${r.electron}</td><td>${r.molecular}</td><td>${r.angles}</td></tr>`).join('');}render();
+</script>
+</body>
+</html>
