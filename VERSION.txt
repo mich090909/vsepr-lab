@@ -1,0 +1,3 @@
+VSEPR Lab - pacchetto GitHub Pages
+File principale: index.html
+SHA256 index.html: a7a0cfce2ef97f613340a746753f320e91c6db990cc5938b5d55efaf223259dc
